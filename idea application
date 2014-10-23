@@ -1,0 +1,11 @@
+-site with upload thingy
+
+-upload zip file of a number of images
+
+- process images
+	- unpack zip, see how many images
+	- elasticity up or down
+	- resize images to thumbnail, small, medium, large (4 servers)
+	- reliability here
+	- zip images
+	- give to user
