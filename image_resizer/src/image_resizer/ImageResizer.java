@@ -22,6 +22,8 @@ public class ImageResizer {
             handler.writeResizedImage(jcp.swidth, jcp.sheight, "s");
             handler.writeResizedImage(jcp.mwidth, jcp.mheight, "m");
             handler.writeResizedImage(jcp.lwidth, jcp.lheight, "l");
+            
+            handler.createZIP(true);
         } catch (IOException ex) {
             System.out.println("Error when performing I/O operations. Did you specify -file parameter?");
         }
