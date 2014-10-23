@@ -16,9 +16,9 @@ public class ImageHandler {
     private BufferedImage original;
     private String filename;
 
-    public void readImage(String image) throws IOException {
-        filename = image;
-        original = ImageIO.read(new File(image));
+    public void readImage(File image) throws IOException {
+        filename = image.getName();
+        original = ImageIO.read(image);
     }
 
     private BufferedImage resizeImage(int width, int height) {
@@ -34,8 +34,12 @@ public class ImageHandler {
         }
     }
 
-    public void writeResizedImage(int width, int height) throws IOException {
+    //TODO: should the scaling keep the aspect ratio?
+    public void writeResizedImage(int width, int height, String descriptor) throws IOException {
+        String extension = filename.substring(filename.length()-3);
+        String resizedFilename = filename.substring(0, filename.length()-4)+"_"+descriptor+"."+extension;
         BufferedImage resized = resizeImage(width, height);
-        ImageIO.write(resized, filename.substring(filename.length()-3), new File("resized.jpg")); 
+        ImageIO.write(resized, extension, new File(resizedFilename)); 
+        System.out.println("Image "+width+"x"+height+" written into "+resizedFilename);
     }
 }
