@@ -1,0 +1,28 @@
+the total-time =
+Adam:
+Jaap:
+
+the think-time = 
+Adam: 1
+Jaap: 1
+
+the dev-time =
+Adam:
+Jaap:
+
+the xp-time = 
+Adam:
+Jaap:
+
+the analysis-time = 
+Adam:
+Jaap:
+
+the write-time = 
+Adam:
+Jaap:
+
+the wasted-time = 
+Adam:
+Jaap:
+
