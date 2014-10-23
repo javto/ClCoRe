@@ -3,8 +3,8 @@ Adam:
 Jaap:
 
 the think-time = 
-Adam: 1
-Jaap: 1
+Adam: 4
+Jaap: 3
 
 the dev-time =
 Adam:
