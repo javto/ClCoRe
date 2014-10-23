@@ -107,3 +107,8 @@ sympy-plots-for-*.tex/
 
 # xindy
 *.xdy
+/image_resizer/nbproject/
+/image_resizer/dist/
+/image_resizer/build/
+
+
