@@ -4,14 +4,13 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
 /**
  * inspiration from http://www.mkyong.com/java/how-to-resize-an-image-in-java/
  *
- * @author wrent
+ * @author Adam Kucera
  */
 public class ImageHandler {
 
@@ -19,9 +18,9 @@ public class ImageHandler {
     private String filename;
     private String dir = "output";
 
-    public void readImage(File image) throws IOException {
-        filename = image.getName();
-        original = ImageIO.read(image);
+    public void readImage(Image image) throws IOException {
+        filename = image.getFilename();
+        original = image.getData();
     }
 
     private BufferedImage resizeImage(int width, int height) {
