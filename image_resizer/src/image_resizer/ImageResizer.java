@@ -20,6 +20,8 @@ public class ImageResizer {
         ImageHandler image_handler = new ImageHandler();
         ZipHandler zip_handler = new ZipHandler();
         try {
+            zip_handler.extractFilesFromZIP(jcp.file, "out");
+            
             ArrayList<Image> list = zip_handler.getImagesFromZIP(jcp.file);
             for (Image image : list) {
                 image_handler.readImage(image);
