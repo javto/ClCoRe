@@ -1,6 +1,7 @@
 package image_resizer;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
@@ -16,6 +17,11 @@ public class Image {
     public Image(InputStream is, String filename) throws IOException {
         this.data = ImageIO.read(is);
         this.filename = filename;
+    }
+    
+    public Image(File file) throws IOException {
+        this.data = ImageIO.read(file);
+        this.filename = file.getName();
     }
 
     public BufferedImage getData() {

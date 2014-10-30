@@ -9,3 +9,12 @@
 	- reliability here
 	- zip images
 	- give to user
+
+
+- client will have a java application which will contact the server and upload certain ZIP file to it
+- user can also specify desired sizes of the resized images
+- server put the ZIP file to the queue
+- the LoadController takes the zipfiles from the queue, it can extract them on disk or to memory.
+- LoadController can start and stop another machines, if the workload is too high
+- ImageHandler resizes the images
+- everything is put into ZIP file and returned to user

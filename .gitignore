@@ -110,5 +110,5 @@ sympy-plots-for-*.tex/
 /image_resizer/nbproject/
 /image_resizer/dist/
 /image_resizer/build/
-
+*.pem
 

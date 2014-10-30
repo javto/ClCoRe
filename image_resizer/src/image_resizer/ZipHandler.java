@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 /**
@@ -16,9 +17,14 @@ import java.util.zip.ZipInputStream;
 public class ZipHandler {
 
     private ZipInputStream zis;
+    private ZipFile zip;
 
-    public ArrayList<Image> getImagesFromZIP(File zip) throws FileNotFoundException, IOException {
-        readZIP(zip);
+    public ZipHandler(File file) throws FileNotFoundException, IOException {
+        zis = new ZipInputStream(new FileInputStream(file));
+        zip = new ZipFile(file);
+    }
+
+    public ArrayList<Image> getImagesFromZIP() throws FileNotFoundException, IOException {
         ZipEntry entry = zis.getNextEntry();
         ArrayList<Image> list = new ArrayList<Image>();
 
@@ -37,16 +43,15 @@ public class ZipHandler {
     /**
      * If the ZIP is too big, we dont want to store all the images in memory
      * from http://www.mkyong.com/java/how-to-decompress-files-from-a-zip-file/
-     * 
+     *
      * @param zip
      * @param output_dir
      */
-    public void extractFilesFromZIP(File zip, String output_dir) throws FileNotFoundException, IOException {
-        readZIP(zip);
+    public void extractFilesFromZIP(String output_dir) throws FileNotFoundException, IOException {
         ZipEntry entry = zis.getNextEntry();
 
         byte[] buffer = new byte[1024];
-        
+
         while (entry != null) {
 
             String fileName = entry.getName();
@@ -70,8 +75,8 @@ public class ZipHandler {
         zis.closeEntry();
         zis.close();
     }
-
-    private void readZIP(File zip) throws FileNotFoundException {
-        zis = new ZipInputStream(new FileInputStream(zip));
+    
+    public int getNumFiles() {
+        return zip.size();
     }
 }
