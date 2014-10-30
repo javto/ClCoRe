@@ -107,13 +107,10 @@ sympy-plots-for-*.tex/
 
 # xindy
 *.xdy
-/image_resizer/nbproject/
-/image_resizer/dist/
-/image_resizer/build/
 *.pem
 
-/image_resizer_server/nbproject/private/
-/image_resizer_client/nbproject/private/
+/image_resizer_server/nbproject/
+/image_resizer_client/nbproject/
 /image_resizer_client/build/
 /image_resizer_client/dist/
 /image_resizer_server/build/
