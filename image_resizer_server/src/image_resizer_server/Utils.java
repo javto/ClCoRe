@@ -1,4 +1,4 @@
-package image_resizer;
+package image_resizer_server;
 
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -1,4 +1,4 @@
-package image_resizer;
+package image_resizer_client;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;

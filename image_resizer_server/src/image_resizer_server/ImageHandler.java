@@ -1,4 +1,4 @@
-package image_resizer;
+package image_resizer_server;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;

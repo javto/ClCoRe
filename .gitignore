@@ -112,3 +112,9 @@ sympy-plots-for-*.tex/
 /image_resizer/build/
 *.pem
 
+/image_resizer_server/nbproject/private/
+/image_resizer_client/nbproject/private/
+/image_resizer_client/build/
+/image_resizer_client/dist/
+/image_resizer_server/build/
+/image_resizer_server/dist/

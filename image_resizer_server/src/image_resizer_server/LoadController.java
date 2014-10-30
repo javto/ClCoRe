@@ -1,4 +1,4 @@
-package image_resizer;
+package image_resizer_server;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
  *
  * @author Adam Kucera
  */
-public class LoadController {
+public class LoadController implements Runnable{
 
     //might be changed or parametrized TODO
     private static final String TMP_DIR = "tmp";
@@ -61,5 +61,10 @@ public class LoadController {
             image_handler.writeResizedImage(jcp.lwidth, jcp.lheight, "l");
         }
         Utils.createZIP(OUT_DIR, true);
+    }
+
+    @Override
+    public void run() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
