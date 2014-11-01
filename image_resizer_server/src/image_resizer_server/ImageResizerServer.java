@@ -17,8 +17,9 @@ public class ImageResizerServer {
         new JCommander(jcp, args);
         LoadController load_controller = new LoadController();
         try {
+            Thread lc_thread = new Thread(load_controller);
+            lc_thread.start();
             ServerConnection connection = new ServerConnection();
-            load_controller.processZip(jcp);
         } catch (IOException ex) {
             System.out.println("Error when performing I/O operations. Did you specify -file parameter?");
         }

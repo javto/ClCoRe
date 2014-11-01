@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class QueueManager {
 
     private static QueueManager instance;
-    private ConcurrentLinkedQueue<QueueItem> queue;
+    private ConcurrentLinkedQueue<QueueItem> pending_queue;
 
     public static QueueManager GetInstance() {
         if (instance == null) {
@@ -19,11 +19,18 @@ public class QueueManager {
     }
 
     public QueueManager() {
-        queue = new ConcurrentLinkedQueue<QueueItem>();
+        pending_queue = new ConcurrentLinkedQueue<QueueItem>();
     }
 
     public void enqueue(QueueItem item) {
-        queue.add(item);
+        pending_queue.add(item);
     }
-
+    
+    public boolean hasItems() {
+        return !pending_queue.isEmpty();
+    }
+    
+    public QueueItem dequeue() {
+        return pending_queue.poll();
+    }
 }

@@ -4,10 +4,14 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -19,6 +23,8 @@ public class ConnectedClient implements Runnable {
     private final int id; //unique id of every thread
     private final Socket socket;
     private BufferedInputStream si;
+    private PrintStream so;
+    private File fileToSend = null;
 
     public ConnectedClient(int id, Socket socket) throws IOException {
         this.id = id;
@@ -39,15 +45,19 @@ public class ConnectedClient implements Runnable {
     @Override
     public void run() {
         try {
+            System.out.println("Receiving file.");
             receiveFile();
+            System.out.println("Receiving parameters.");
             JCommanderParameters jcp = receiveJcp();
-            QueueItem item = new QueueItem(jcp, this, RECEIVED_FILES_DIR);
+            Object lock = new Object();
+            QueueItem item = new QueueItem(jcp, this, RECEIVED_FILES_DIR, lock);
             QueueManager.GetInstance().enqueue(item);
-            this.wait();
+            synchronized (lock) {
+                System.out.println("Waiting...");
+                lock.wait();
+            }
             sendFile();
-            si.close();
             socket.close();
-            return;
         } catch (IOException ex) {
             System.err.println("Error when ending connection.");
         } catch (InterruptedException ex) {
@@ -70,6 +80,7 @@ public class ConnectedClient implements Runnable {
                 fos = new FileOutputStream(file);
             } catch (FileNotFoundException ex) {
                 System.err.println("Error when creating file.");
+                return;
             }
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             int bytesRead = si.read(b, 0, b.length);
@@ -78,15 +89,47 @@ public class ConnectedClient implements Runnable {
                 baos.write(b);
                 bytesRead = si.read(b);
             } while (bytesRead != -1);
-
             bos.write(baos.toByteArray());
             bos.flush();
             bos.close();
+
+            socket.shutdownInput();
         }
     }
 
     private void sendFile() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            so = new PrintStream(socket.getOutputStream(), true);
+        } catch (IOException ex) {
+            System.err.println("Error when creating stream.");
+        }
+        System.out.println("Sending file back to the client");
+        if (so != null) {
+            byte[] bytearray = new byte[(int) fileToSend.length()];
+            FileInputStream fis = null;
+            try {
+                fis = new FileInputStream(fileToSend);
+            } catch (FileNotFoundException ex) {
+                System.err.println("Error when reading file.");
+            }
+            BufferedInputStream bis = new BufferedInputStream(fis);
+
+            try {
+                bis.read(bytearray, 0, bytearray.length);
+            } catch (IOException ex) {
+                System.err.println("Error when sending file.");
+            }
+            System.out.println("Sending (" + bytearray.length + " bytes)");
+            so.write(bytearray, 0, bytearray.length);
+            so.flush();
+            System.out.println("Done.");
+            try {
+                bis.close();
+            } catch (IOException ex) {
+                System.err.println("Error when closing stream.");
+            }
+        }
+        so.close();
     }
 
     public int getId() {
@@ -94,6 +137,10 @@ public class ConnectedClient implements Runnable {
     }
 
     private JCommanderParameters receiveJcp() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new JCommanderParameters();
+    }
+
+    void setFileToSend(File file) {
+        this.fileToSend = file;
     }
 }
