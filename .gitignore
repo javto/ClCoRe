@@ -115,3 +115,4 @@ sympy-plots-for-*.tex/
 /image_resizer_client/dist/
 /image_resizer_server/build/
 /image_resizer_server/dist/
+log.txt

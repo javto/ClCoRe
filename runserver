@@ -1,0 +1,1 @@
+java  -Djava.library.path=/home/wrent/Dropbox/skola/cloud_computing/ClCoRe/image_resizer_server/lib/sigar/ -jar image_resizer_server/dist/image_resizer_server.jar

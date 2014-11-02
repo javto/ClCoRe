@@ -3,8 +3,6 @@ package image_resizer_server;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -78,6 +76,8 @@ public class LoadController implements Runnable {
                 }
                 client = item.getClient();
 
+                //TODO the assigning to proper VMs should be done here?
+                //or maybe it should be in the connection and the connection will be started with the proper VM
                 try {
                     processZip(item.getFile(), item.getParams(), client.getId());
                 } catch (IOException ex) {
