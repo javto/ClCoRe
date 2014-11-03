@@ -57,6 +57,14 @@ public class AmazonConnector {
 		runInstances(1, amazonKey, securityGroupName);
 	}
 
+	public AmazonEC2Client getAmazonEC2Client() {
+		return amazonEC2Client;
+	}
+
+	public void setAmazonEC2Client(AmazonEC2Client amazonEC2Client) {
+		this.amazonEC2Client = amazonEC2Client;
+	}
+
 	/**
 	 * creates a securitygroup with SSH access
 	 * 
