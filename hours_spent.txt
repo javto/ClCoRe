@@ -4,11 +4,11 @@ Jaap:
 
 the think-time = 
 Adam: 8
-Jaap: 3
+Jaap: 5
 
 the dev-time =
 Adam: 13
-Jaap:
+Jaap: 4
 
 the xp-time = 
 Adam:
