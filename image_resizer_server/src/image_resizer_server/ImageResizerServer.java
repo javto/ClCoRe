@@ -20,6 +20,7 @@ public class ImageResizerServer {
             VMManager vmm = new VMManager();
             //this thread monitors our running VMs and starts/stops them, depending on a load
             Thread vmm_thread = new Thread(vmm);
+            vmm_thread.run();
             try {
                 //start socket connection and accept clients
                 ServerConnection connection = new ServerConnection();
