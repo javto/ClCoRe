@@ -29,12 +29,15 @@ class VMManager implements Runnable {
 				"amazon.properties"), "amazon");
 		amazonEC2Client = amazonConnector.getAmazonEC2Client();
 		
-		//prints the number of runninginstances every 10 seconds
+		//prints the number of running instances every 10 seconds
 		Timer timer = new Timer();
 	    timer.schedule(new printNumberOfInstances(), 100, 10000); 
 
+	    //for testing purposes:
+	    addInstances(4);
 		while (true) {
 			//TODO check if we need more or less instances
+			
 		}
 	}
 
