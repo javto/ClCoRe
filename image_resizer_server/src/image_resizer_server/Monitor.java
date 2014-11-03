@@ -11,7 +11,7 @@ import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 
 /**
- *
+ * Class responsible for monitoring performance of slave machines.
  * @author Adam Kucera
  */
 public class Monitor extends TimerTask {
@@ -19,15 +19,17 @@ public class Monitor extends TimerTask {
     private Sigar sigar = new Sigar();
     private ArrayList<LogEntry> log;
 
-    /*
-     CPUperc - actual percentage value? Have to investigate more
-     Mem
-     FileSystemUsage
+    /**
+     * Initializes Monitor.
      */
     public void Monitor() {
         log = new ArrayList<>();
     }
 
+    /**
+     * This method is run by Timer every second to insert new performance information
+     * in the log.
+     */
     @Override
     public void run() {
         if (log == null) {
@@ -43,12 +45,17 @@ public class Monitor extends TimerTask {
             System.err.println("Error when retrieving performance data.");
         }
         log.add(new LogEntry(new Date(), processor_usage, memory_usage));
+        //every 30 seconds, generate new log file.
+        //TODO maybe we need something more effective
         if (log.size() % 30 == 0) {
             this.generateLog();
         }
     }
-
-    public void generateLog() {
+    
+    /**
+     * Generates the log file from the items in log array.
+     */
+    private void generateLog() {
         File f = new File("log.txt");
         PrintWriter pw = null;
         try {

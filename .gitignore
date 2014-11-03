@@ -109,7 +109,6 @@ sympy-plots-for-*.tex/
 *.xdy
 *.pem
 
-/image_resizer_server/nbproject/
 /image_resizer_client/nbproject/
 /image_resizer_client/build/
 /image_resizer_client/dist/

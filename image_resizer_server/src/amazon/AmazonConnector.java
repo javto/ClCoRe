@@ -1,4 +1,4 @@
-package src.amazon;
+package amazon;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,8 +56,8 @@ public class AmazonConnector {
 			System.exit(0);
 		}
 		System.out.println("Creating one instance at start");
-		createSecurityGroup(securityGroupName,
-				"a security group for image_server with SSH enabled");
+		//createSecurityGroup(securityGroupName,
+		//		"a security group for image_server with SSH enabled");
 		amazonKey = createKeyPair(keyName);
 		runInstances(1);
 	}

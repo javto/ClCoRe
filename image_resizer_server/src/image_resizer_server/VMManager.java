@@ -1,11 +1,11 @@
-package src.image_resizer_server;
+package image_resizer_server;
 
 import java.io.File;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import src.amazon.AmazonConnector;
+import amazon.AmazonConnector;
 
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.Instance;
@@ -26,7 +26,7 @@ class VMManager implements Runnable {
 	public void run() {
 		//startup the connection to amazon
 		amazonConnector = new AmazonConnector(new File(
-				"amazonJaap.properties"), "amazon");
+				"amazonJaap.properties"), "amazon"+(int)(Math.random()*1000));
 		amazonEC2Client = amazonConnector.getAmazonEC2Client();
 		
 		//prints the number of running instances every 10 seconds

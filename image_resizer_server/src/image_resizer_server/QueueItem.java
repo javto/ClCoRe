@@ -3,7 +3,7 @@ package image_resizer_server;
 import java.io.File;
 
 /**
- *
+ * Object representing an item in the queue
  * @author Adam Kucera
  */
 public class QueueItem {

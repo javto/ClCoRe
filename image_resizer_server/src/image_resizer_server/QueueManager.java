@@ -3,7 +3,7 @@ package image_resizer_server;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- *
+ * Object responsible for maintaining the job queue instance.
  * @author wrent
  */
 public class QueueManager {

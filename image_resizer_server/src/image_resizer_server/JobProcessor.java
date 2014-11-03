@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
+ * Class responsible for processing jobs in the queue on the slave machine.
  *
  * @author Adam Kucera
  */
@@ -18,23 +19,34 @@ public class JobProcessor implements Runnable {
 
     /**
      * If the file is bigger then certain treshold, we dont want to store all
-     * images in memory, but we want to extract them and process them.
+     * images in memory, but we want to extract them and process them. This
+     * method decides, how will the ZIP be processed - directly in memory or
+     * from disk.
      *
-     * TODO: similar load balancing on more machines
+     * @param file file to process
+     * @param jcp parameters to apply
+     * @param client_id ID of the client to process
+     * @throws java.io.IOException
      */
     public void processZip(File file, JCommanderParameters jcp, int client_id) throws IOException {
         ZipHandler zip_handler = new ZipHandler(file);
         //files to be processed in memory
         if (zip_handler.getNumFiles() < BATCH_SIZE) {
+            //put all images to memory
             ArrayList<Image> list = zip_handler.getImagesFromZIP();
+            //and process them
             processImages(list, jcp, client_id);
+            //and create ZIP
+            Utils.createZIP(IMAGES_DIR + client_id, true);
         } //files to be extracted and then read in batches
         else {
+            //extract files
             zip_handler.extractFilesFromZIP(TMP_DIR + client_id);
+
             int num_files = zip_handler.getNumFiles();
             File[] files = new File(TMP_DIR + client_id).listFiles();
-
-            ArrayList<Image> list = new ArrayList<Image>();
+            ArrayList<Image> list = new ArrayList<>();
+            //put files in the memory in batches and process these batches
             for (int i = 0; i < num_files; i++) {
                 Image image = new Image(files[i]);
                 list.add(image);
@@ -47,10 +59,21 @@ public class JobProcessor implements Runnable {
             //and process the remaining- images
             System.out.println("Processing last batch.");
             processImages(list, jcp, client_id);
+            //and create ZIP
+            Utils.createZIP(IMAGES_DIR + client_id, true);
             Utils.delete(new File(TMP_DIR + client_id));
         }
     }
 
+    /**
+     * The method will create 4 different images from the origininal images in
+     * list
+     *
+     * @param list list of images to process
+     * @param jcp parameters to use
+     * @param client_id client ID to use
+     * @throws IOException
+     */
     private void processImages(ArrayList<Image> list, JCommanderParameters jcp, int client_id) throws IOException {
         ImageHandler image_handler = new ImageHandler(IMAGES_DIR + client_id);
         for (Image image : list) {
@@ -60,40 +83,43 @@ public class JobProcessor implements Runnable {
             image_handler.writeResizedImage(jcp.mwidth, jcp.mheight, "m");
             image_handler.writeResizedImage(jcp.lwidth, jcp.lheight, "l");
         }
-        Utils.createZIP(IMAGES_DIR + client_id, true);
     }
 
+    /**
+     * Method gets the ZIP file from the queue and processes it.
+     */
     @Override
     public void run() {
         QueueManager queue = QueueManager.GetInstance();
-        //check the queue and process (schedule? load balance?) items
         while (true) {
             if (queue.hasItems()) {
                 QueueItem item;
                 ConnectedClientSlave client;
+                //get the item from the queue
                 synchronized (this) {
                     item = queue.dequeue();
                 }
                 client = item.getClient();
-
-                //TODO the assigning to proper VMs should be done here?
-                //or maybe it should be in the connection and the connection will be started with the proper VM
+                //and process it
                 try {
                     processZip(item.getFile(), item.getParams(), client.getId());
                 } catch (IOException ex) {
                     System.err.println("Error when processing job for client " + client.getId());
                 }
-
                 try {
+                    //delete the original file
                     Utils.delete(item.getFile());
-                    client.setFileToSend(new File(IMAGES_DIR + client.getId()+".zip"));
+                    //and set which file to send to the client
+                    client.setFileToSend(new File(IMAGES_DIR + client.getId() + ".zip"));
                 } catch (IOException ex) {
                     System.err.println("Error when deleting temporary files.");
                 }
                 Object lock = item.getLock();
-                
+
+                //notify ClientConnection to continue with work
+                //TODO not really sure if this works for multiple clients!!!!! have to test
                 synchronized (lock) {
-                   lock.notify();
+                    lock.notify();
                 }
             }
         }

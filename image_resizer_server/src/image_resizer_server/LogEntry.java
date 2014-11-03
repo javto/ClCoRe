@@ -3,7 +3,7 @@ package image_resizer_server;
 import java.util.Date;
 
 /**
- *
+ * Class representing an Entry in the Monitor log.
  * @author Adam Kucera
  */
 public class LogEntry {
