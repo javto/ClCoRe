@@ -26,7 +26,7 @@ class VMManager implements Runnable {
 	public void run() {
 		//startup the connection to amazon
 		amazonConnector = new AmazonConnector(new File(
-				"amazon.properties"), "amazon");
+				"amazonJaap.properties"), "amazon");
 		amazonEC2Client = amazonConnector.getAmazonEC2Client();
 		
 		//prints the number of running instances every 10 seconds
