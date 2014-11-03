@@ -172,7 +172,7 @@ public class AmazonConnector {
 
 		// TODO: convert this publicly available AMI to a private one we made
 		// ami-8b024dbb is for XLT-4.4.3 java 7 ubuntu 14.04 -64 bit image
-		runInstancesRequest.withImageId("ami-8b024dbb")
+		runInstancesRequest.withImageId("ami-13fbb723")
 				.withInstanceType("t2.micro").withMinCount(amountOfInstances)
 				.withMaxCount(amountOfInstances).withKeyName(amazonKey.getKeyName())
 				.withSecurityGroups(securityGroupName);

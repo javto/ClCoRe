@@ -7,16 +7,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 
 /**
- * The class is responsible for handling connected clients to slave machines.
- * It receives the ZIP from the user and puts it to the queue, it also sends the files back.
+ * The class is responsible for handling connected clients to slave machines. It
+ * receives the ZIP from the user and puts it to the queue, it also sends the
+ * files back.
+ *
  * @author Adam Kucera
  */
 public class ConnectedClientSlave implements Runnable {
+
     private final String RECEIVED_FILES_DIR = "received";//Where are received files stored
     private final int id; //unique id of every thread
     private final Socket socket;
@@ -26,9 +30,10 @@ public class ConnectedClientSlave implements Runnable {
 
     /**
      * Inicializes the client connection streams.
+     *
      * @param id id of the client
      * @param socket client connection socket
-     * @throws IOException 
+     * @throws IOException
      */
     public ConnectedClientSlave(int id, Socket socket) throws IOException {
         this.id = id;
@@ -46,9 +51,9 @@ public class ConnectedClientSlave implements Runnable {
     }
 
     /**
-     * Main running method of each thread. At first it receives files and parameters,
-     * then it puts it to the queue and waits. When the queue is processed, then it
-     * sends the file back to the user.
+     * Main running method of each thread. At first it receives files and
+     * parameters, then it puts it to the queue and waits. When the queue is
+     * processed, then it sends the file back to the user.
      */
     @Override
     public void run() {
@@ -81,12 +86,21 @@ public class ConnectedClientSlave implements Runnable {
     }
 
     /**
-     * Main method responsible for receiving the file from the client.
-     * inspired from http://stackoverflow.com/questions/4775617/file-uploading-downloading-between-server-client
+     * Main method responsible for receiving the file from the client. inspired
+     * from
+     * http://stackoverflow.com/questions/4775617/file-uploading-downloading-between-server-client
      */
     private void receiveFile() throws IOException {
         //create new file
         File file = new File(RECEIVED_FILES_DIR, id + ".zip");
+        if (!file.exists()) {
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdirs();
+            }
+            file.createNewFile();
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write("0"); // Configured to write to myFile
+        }
         if (si != null) {
             //initialize streams
             FileOutputStream fos = null;
@@ -95,7 +109,7 @@ public class ConnectedClientSlave implements Runnable {
             try {
                 fos = new FileOutputStream(file);
             } catch (FileNotFoundException ex) {
-                System.err.println("Error when creating file.");
+                System.err.println("Error when creating file " + file.getAbsolutePath());
                 return;
             }
             //read the file from the socket connection
@@ -113,7 +127,7 @@ public class ConnectedClientSlave implements Runnable {
             socket.shutdownInput();
         }
     }
-    
+
     /**
      * Method responsible for sending the file back to the client.
      */
@@ -159,6 +173,7 @@ public class ConnectedClientSlave implements Runnable {
 
     /**
      * Get the id of the client.
+     *
      * @return id of the client
      */
     public int getId() {
@@ -167,7 +182,8 @@ public class ConnectedClientSlave implements Runnable {
 
     /**
      * Method which receives user parameters from the client.
-     * @return 
+     *
+     * @return
      */
     private JCommanderParameters receiveJcp() {
         //TODO this has to be implemented!!!
@@ -176,6 +192,7 @@ public class ConnectedClientSlave implements Runnable {
 
     /**
      * Sets the file to be send to the user.
+     *
      * @param file file to be send
      */
     public void setFileToSend(File file) {

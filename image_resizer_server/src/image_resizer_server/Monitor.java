@@ -22,7 +22,7 @@ public class Monitor extends TimerTask {
     /**
      * Initializes Monitor.
      */
-    public void Monitor() {
+    public Monitor() {
         log = new ArrayList<>();
     }
 

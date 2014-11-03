@@ -13,18 +13,24 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 /**
- *
+ * Basic class for client connection. Handles sending and receiving.
  * @author Adam Kucera
  */
 public class ClientConnection {
 
     private Socket socket;
+    //address has to be set to the MASTER server!
     private final String server = "localhost";
+    //port has to be same.
     private final int port = 4020;
     private PrintStream so;
     private BufferedInputStream si;
+    //what is the filename of received file.
     private final String RECEIVED_FILE = "output";
 
+    /**
+     * Connects client to the server.
+     */
     public ClientConnection() {
         try {
             socket = new Socket(server, port);
@@ -40,10 +46,11 @@ public class ClientConnection {
     }
 
     /**
-     * From
-     * http://stackoverflow.com/questions/4775617/file-uploading-downloading-between-server-client
-     *
-     * @param file
+     * Sends the file to the server.
+     * inspired from http://stackoverflow.com/questions/4775617/file-uploading-downloading-between-server-client
+     * almost the same as in the server application.
+     * 
+     * @param file file to be sent
      * @throws IOException
      */
     public void sendFile(File file) throws IOException {
@@ -72,15 +79,29 @@ public class ClientConnection {
         }
     }
 
+    /**
+     * Sends the parameters to the server.
+     * TODO to be done
+     * @param jcp parameters to be sent
+     */
     public void sendParameters(JCommanderParameters jcp) {
 
     }
 
+    /**
+     * Closes the connection.
+     * @throws IOException 
+     */
     public void closeSocket() throws IOException {
         si.close();
         socket.close();
     }
 
+    /**
+     * Receives the file from the server.
+     * Almost the same as in the server part.
+     * @throws IOException 
+     */
     public void receiveFile() throws IOException {
         System.out.println("Receiving file...");
         si = new BufferedInputStream(socket.getInputStream());

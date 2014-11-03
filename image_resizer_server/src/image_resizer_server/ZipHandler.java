@@ -11,7 +11,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 /**
- *
+ * Class dealing with ZIP extracting.
  * @author Adam Kucera
  */
 public class ZipHandler {
@@ -19,11 +19,23 @@ public class ZipHandler {
     private ZipInputStream zis;
     private ZipFile zip;
 
+    /**
+     * Initializes new ZipHandler.
+     * @param file Zip to take care of.
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
     public ZipHandler(File file) throws FileNotFoundException, IOException {
         zis = new ZipInputStream(new FileInputStream(file));
         zip = new ZipFile(file);
     }
 
+    /**
+     * Returns a list of all images in a ZIP.
+     * @return Array of images
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
     public ArrayList<Image> getImagesFromZIP() throws FileNotFoundException, IOException {
         ZipEntry entry = zis.getNextEntry();
         ArrayList<Image> list = new ArrayList<Image>();
@@ -41,11 +53,10 @@ public class ZipHandler {
     }
 
     /**
-     * If the ZIP is too big, we dont want to store all the images in memory
+     * Extracts the files from the ZIP to disk into specified output dir.
      * from http://www.mkyong.com/java/how-to-decompress-files-from-a-zip-file/
-     *
-     * @param zip
-     * @param output_dir
+     * @param output_dir dir to extract the images
+     * @throws java.io.FileNotFoundException
      */
     public void extractFilesFromZIP(String output_dir) throws FileNotFoundException, IOException {
         ZipEntry entry = zis.getNextEntry();
@@ -76,6 +87,10 @@ public class ZipHandler {
         zis.close();
     }
     
+    /**
+     * Returns the number of files in the ZIP.
+     * @return number of files.
+     */
     public int getNumFiles() {
         return zip.size();
     }

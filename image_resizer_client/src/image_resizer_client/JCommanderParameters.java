@@ -4,6 +4,10 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 import java.io.File;
 
+/**
+ * Parameters to be specified by user.
+ * @author Adam Kucera
+ */
 public class JCommanderParameters {
     private static final int TWIDTH = 100;
     private static final int THEIGHT = 100;
