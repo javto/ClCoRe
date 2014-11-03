@@ -1,8 +1,7 @@
 package amazon;
 
+import java.io.File;
 import java.io.IOException;
-
-import src.image_resizer_server.LoadController;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -29,16 +28,14 @@ public class AmazonConnector {
 	 * starts up one machine
 	 * 
 	 * @param propertiesFile
-	 *            (example: /home/user/amazon.properties)
+	 *            (example file: /home/user/amazon.properties)
 	 * @param keyName
 	 *            the keyname to use with the instances
 	 */
-	public AmazonConnector(String propertiesFileLocation, String keyName) {
+	public AmazonConnector(File propertiesFile, String keyName) {
 		AWSCredentials credentials = null;
 		try {
-			credentials = new PropertiesCredentials(
-					LoadController.class
-							.getResourceAsStream(propertiesFileLocation));
+			credentials = new PropertiesCredentials(propertiesFile);
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
