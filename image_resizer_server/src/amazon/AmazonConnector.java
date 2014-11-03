@@ -1,7 +1,8 @@
-package amazon;
+package src.amazon;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -12,15 +13,20 @@ import com.amazonaws.services.ec2.model.AuthorizeSecurityGroupIngressRequest;
 import com.amazonaws.services.ec2.model.CreateKeyPairRequest;
 import com.amazonaws.services.ec2.model.CreateKeyPairResult;
 import com.amazonaws.services.ec2.model.CreateSecurityGroupRequest;
+import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
+import com.amazonaws.services.ec2.model.DescribeInstancesResult;
+import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.IpPermission;
 import com.amazonaws.services.ec2.model.KeyPair;
+import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
 
 public class AmazonConnector {
 
 	AmazonEC2Client amazonEC2Client = null;
-
+	String securityGroupName = "Java Security Group Image server";
+	KeyPair amazonKey = null;
 	/**
 	 * connect to amazon cloud, must have an amazon.properties file as input and
 	 * a keyname for the instances
@@ -50,19 +56,26 @@ public class AmazonConnector {
 			System.exit(0);
 		}
 		System.out.println("Creating one instance at start");
-		String securityGroupName = "Java Security Group Image server";
 		createSecurityGroup(securityGroupName,
 				"a security group for image_server with SSH enabled");
-		KeyPair amazonKey = createKeyPair(keyName);
-		runInstances(1, amazonKey, securityGroupName);
+		amazonKey = createKeyPair(keyName);
+		runInstances(1);
+	}
+
+	public String getSecurityGroupName() {
+		return securityGroupName;
+	}
+
+	public void setSecurityGroupName(String securityGroupName) {
+		this.securityGroupName = securityGroupName;
 	}
 
 	public AmazonEC2Client getAmazonEC2Client() {
 		return amazonEC2Client;
 	}
-
-	public void setAmazonEC2Client(AmazonEC2Client amazonEC2Client) {
-		this.amazonEC2Client = amazonEC2Client;
+	
+	public KeyPair getAmazonKey() {
+		return amazonKey;
 	}
 
 	/**
@@ -152,9 +165,8 @@ public class AmazonConnector {
 		}
 		return null;
 	}
-
-	public void runInstances(int amountOfInstances, KeyPair amazonKey,
-			String securityGroupName) {
+	
+	public void runInstances(int amountOfInstances) {
 		System.out.println("Starting " + amountOfInstances + " instances");
 		RunInstancesRequest runInstancesRequest = new RunInstancesRequest();
 
@@ -168,5 +180,26 @@ public class AmazonConnector {
 		RunInstancesResult result = amazonEC2Client.runInstances(runInstancesRequest);
 		System.out.println(result.toString());
 		System.out.println(amountOfInstances + " instances made");
+	}
+
+	public List<Instance> getInstances() {
+		try {
+			DescribeInstancesRequest request = new DescribeInstancesRequest();
+			DescribeInstancesResult ec2Response = amazonEC2Client
+					.describeInstances(request);
+			List<Reservation> requests = ec2Response.getReservations();
+			if (requests.size() == 1) {
+				return requests.get(0).getInstances();
+			} else {
+				return null;
+			}
+		} catch (AmazonServiceException aSException) {
+			System.err.println(aSException.getMessage());
+			aSException.printStackTrace();
+		} catch (AmazonClientException aCException) {
+			System.err.println(aCException.getMessage());
+			aCException.printStackTrace();
+		}
+		return null;
 	}
 }
