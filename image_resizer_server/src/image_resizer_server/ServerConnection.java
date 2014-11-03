@@ -28,6 +28,9 @@ public class ServerConnection {
             System.exit(1);
         }
 
+    }
+
+    void runSlave() throws IOException {
         Socket clientSocket = null;
         //endlessly accept clients
         while (true) {
@@ -41,9 +44,13 @@ public class ServerConnection {
                 System.exit(1);
             }
             //create object for each thread
-            ConnectedClient client = new ConnectedClient(clientsCnt++, clientSocket);
+            ConnectedClientSlave client = new ConnectedClientSlave(clientsCnt++, clientSocket);
             Thread t = new Thread(client);
             t.start();
         }
+    }
+
+    void runMaster() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

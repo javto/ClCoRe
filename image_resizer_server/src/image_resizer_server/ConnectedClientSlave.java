@@ -10,14 +10,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author Adam Kucera
  */
-public class ConnectedClient implements Runnable {
+public class ConnectedClientSlave implements Runnable {
 
     private final String RECEIVED_FILES_DIR = "received";
     private final int id; //unique id of every thread
@@ -26,7 +24,7 @@ public class ConnectedClient implements Runnable {
     private PrintStream so;
     private File fileToSend = null;
 
-    public ConnectedClient(int id, Socket socket) throws IOException {
+    public ConnectedClientSlave(int id, Socket socket) throws IOException {
         this.id = id;
         this.socket = socket;
 
@@ -137,6 +135,7 @@ public class ConnectedClient implements Runnable {
     }
 
     private JCommanderParameters receiveJcp() {
+        //TODO this has to be implemented!!!
         return new JCommanderParameters();
     }
 

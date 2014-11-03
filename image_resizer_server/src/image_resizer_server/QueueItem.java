@@ -10,10 +10,10 @@ public class QueueItem {
 
     private File file;
     private JCommanderParameters params;
-    private ConnectedClient client;
+    private ConnectedClientSlave client;
     private Object lock;
 
-    public QueueItem(JCommanderParameters params, ConnectedClient client, String dir, Object lock) {
+    public QueueItem(JCommanderParameters params, ConnectedClientSlave client, String dir, Object lock) {
         this.params = params;
         this.client = client;
         this.file = new File(dir, client.getId() + ".zip");
@@ -28,7 +28,7 @@ public class QueueItem {
         return params;
     }
 
-    public ConnectedClient getClient() {
+    public ConnectedClientSlave getClient() {
         return client;
     }
 

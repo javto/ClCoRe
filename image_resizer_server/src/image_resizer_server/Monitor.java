@@ -36,6 +36,7 @@ public class Monitor extends TimerTask {
         double processor_usage = 0;
         float memory_usage = 0;
         try {
+            //TODO add also disk usage? number of users! processor value shows 0!
             processor_usage = sigar.getCpuPerc().getCombined();
             memory_usage = sigar.getMem().getActualUsed();
         } catch (SigarException ex) {

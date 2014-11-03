@@ -8,7 +8,7 @@ import java.util.ArrayList;
  *
  * @author Adam Kucera
  */
-public class LoadController implements Runnable {
+public class JobProcessor implements Runnable {
 
     //might be changed or parametrized TODO
     private static final String TMP_DIR = "tmp";
@@ -70,7 +70,7 @@ public class LoadController implements Runnable {
         while (true) {
             if (queue.hasItems()) {
                 QueueItem item;
-                ConnectedClient client;
+                ConnectedClientSlave client;
                 synchronized (this) {
                     item = queue.dequeue();
                 }
