@@ -71,14 +71,12 @@ class VMManager implements Runnable {
     public void run() {
         //startup the connection to amazon
         amazonConnector = new AmazonConnector(new File(
-                "amazonJaap.properties"), "amazon" + (int) (Math.random() * 1000));
+                "amazonJaap.properties"));
 
         //prints the number of running instances every 10 seconds
         Timer timer = new Timer();
         timer.schedule(new printNumberOfInstances(), 100, 10000);
 
-        //for testing purposes:
-        addInstances(4);
         while (true) {
             //TODO check if we need more or less instances
 
