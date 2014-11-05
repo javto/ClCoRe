@@ -35,7 +35,7 @@ public class ImageResizerServer {
         else {
             //start the performance monitoring on the machine
             Timer timer = new Timer();
-            timer.schedule(new Monitor(), 0, 1000);
+            timer.schedule(Monitor.getInstance(), 0, 1000);
             //start the main thread processing items in the queue
             JobProcessor jp = new JobProcessor();
             Thread jp_thread = new Thread(jp);

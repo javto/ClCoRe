@@ -18,11 +18,18 @@ public class Monitor extends TimerTask {
 
     private Sigar sigar = new Sigar();
     private ArrayList<LogEntry> log;
-
+    private static Monitor instance = null;
+    
+    public static Monitor getInstance() {
+        if(instance == null) {
+            instance = new Monitor();
+        }
+        return instance;
+    }
     /**
      * Initializes Monitor.
      */
-    public Monitor() {
+    private Monitor() {
         log = new ArrayList<>();
     }
 
@@ -37,6 +44,7 @@ public class Monitor extends TimerTask {
         }
         double processor_usage = 0;
         float memory_usage = 0;
+        int number_of_users = 0;
         try {
             //TODO add also disk usage? number of users! processor value shows 0!
             processor_usage = sigar.getCpuPerc().getCombined();
@@ -44,7 +52,7 @@ public class Monitor extends TimerTask {
         } catch (SigarException ex) {
             System.err.println("Error when retrieving performance data.");
         }
-        log.add(new LogEntry(new Date(), processor_usage, memory_usage));
+        log.add(new LogEntry(new Date(), processor_usage, memory_usage, number_of_users));
         //every 30 seconds, generate new log file.
         //TODO maybe we need something more effective
         if (log.size() % 30 == 0) {
@@ -63,17 +71,22 @@ public class Monitor extends TimerTask {
         } catch (FileNotFoundException ex) {
             System.err.println("Cannot open log file.");
         }
-        pw.println("Date\t\t\t\t\t\tProcessor usage\t\t\t\t\t\tMemory usage");
+        pw.println("Date\t\t\t\tProcessor usage\t\t\t\tMemory usage\t\t\t\tNumber of users");
         for (LogEntry entry : log) {
             DateFormat format = DateFormat.getDateTimeInstance();
             String str = format.format(entry.getD());
             str = str.concat("\t\t\t\t\t\t");
-            str = str.concat(String.valueOf((long) entry.getProcessor_usage()));
+            str = str.concat(String.valueOf((long) entry.getProcessorUsage()));
             str = str.concat("\t\t\t\t\t\t");
-            str = str.concat(Float.toString(entry.getMemory_usage()));
+            str = str.concat(Float.toString(entry.getMemoryUsage()));
+            str = str.concat("\t\t\t\t\t\t");
+            str = str.concat(Float.toString(entry.getNumberOfUsers()));
             pw.println(str);
         }
         pw.close();
     }
 
+    public LogEntry getLastEntry() {
+        return log.get(log.size());
+    }
 }

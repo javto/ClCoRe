@@ -23,6 +23,7 @@ import javax.swing.JOptionPane;
 /**
  *
  * @author Adam Kucera
+ * @author Jaap
  */
 class VMManager implements Runnable {
 
