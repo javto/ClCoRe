@@ -218,7 +218,7 @@ public class AmazonConnector {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * stop the instances with certain IDs
 	 * 
@@ -244,6 +244,7 @@ public class AmazonConnector {
 
 	/**
 	 * run new instances
+	 * 
 	 * @param amountOfInstances
 	 */
 	public void runInstances(int amountOfInstances) {
@@ -266,6 +267,7 @@ public class AmazonConnector {
 
 	/**
 	 * get a list of instances with the instanceIDs we use
+	 * 
 	 * @return list of instances
 	 */
 	public List<Instance> getInstances() {
@@ -274,17 +276,18 @@ public class AmazonConnector {
 			DescribeInstancesResult ec2Response = amazonEC2Client
 					.describeInstances(request
 							.withInstanceIds(instanceIDsStrings));
-			List<Reservation> requests = ec2Response.getReservations();
-			if (requests.size() == 1) {
-				return requests.get(0).getInstances();
-			} else {
-				System.out
-						.println("can't choose between the multiple requests when gathering instances");
-				for (Reservation res : requests) {
-					System.out.println(res.toString());
+			List<Reservation> reservations = ec2Response.getReservations();
+			List<Instance> instances = new ArrayList<Instance>();
+			for (Reservation r : reservations) {
+				for (Instance instance : r.getInstances()) {
+					if (!instances.contains(instance)
+							&& instanceIDsStrings.contains(instance
+									.getInstanceId())) {
+						instances.add(instance);
+					}
 				}
-				return requests.get(0).getInstances();
 			}
+			return instances;
 		} catch (AmazonServiceException aSException) {
 			System.err.println(aSException.getMessage());
 			aSException.printStackTrace();
@@ -298,36 +301,29 @@ public class AmazonConnector {
 	/**
 	 * @return the states from the instances
 	 */
-	public String[] getStatesFromInstances() {
+	public List<String> getInstancesStates() {
 		List<Instance> instances = getInstances();
-		String[] instancesStatuses = new String[instances.size()];
-		System.out.println("Collecting states.");
-		for (int i = 0; i < instances.size(); i++) {
-			instancesStatuses[i] = instances.get(i).getState().toString();
+		List<String> result = new ArrayList<String>();
+
+		for (Instance instance : instances) {
+			if (!result.contains(instance.getState().getName())
+					&& instanceIDsStrings.contains(instance.getInstanceId())) {
+				result.add(instance.getState().getName());
+			}
 		}
-		return instancesStatuses;
+		return result;
 	}
 
 	/**
 	 * @return public dns names to connect to
 	 */
 	public List<String> getInstancesPublicDnsNames() {
-		DescribeInstancesResult describeInstancesRequest = amazonEC2Client
-				.describeInstances();
-		List<Reservation> reservations = describeInstancesRequest
-				.getReservations();
-		int count = instanceIDsStrings.size();
+		List<Instance> instances = getInstances();
 		List<String> result = new ArrayList<String>();
-		for (Reservation reservation : reservations) {
-			if (count > 0) {
-				for (Instance instance : reservation.getInstances()) {
-					if (instanceIDsStrings.contains(instance.getInstanceId())) {
-						count--;
-						result.add(instance.getPublicDnsName());
-					}
-				}
-			} else {
-				break;
+		for (Instance instance : instances) {
+			if (!result.contains(instance.getPublicDnsName())
+					&& instanceIDsStrings.contains(instance.getInstanceId())) {
+				result.add(instance.getPublicDnsName());
 			}
 		}
 		return result;

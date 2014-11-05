@@ -89,14 +89,12 @@ class VMManager implements Runnable {
     public void run() {
         //startup the connection to amazon
         amazonConnector = new AmazonConnector(new File(
-                "amazonJaap.properties"), "amazon" + (int) (Math.random() * 1000));
+                "amazonJaap.properties"));
 
         //prints the number of running instances every 10 seconds
         Timer timer = new Timer();
         timer.schedule(new printNumberOfInstances(), 100, 10000);
 
-        //for testing purposes:
-        addInstances(4);
         while (true) {
             //TODO check if we need more or less instances
 
@@ -115,8 +113,8 @@ class VMManager implements Runnable {
         amazonConnector.runInstances(numberOfInstances);
     }
     
-    private String[] getInstancesStates() {
-        return amazonConnector.getStatesFromInstances();
+    private List<String> getInstancesStates() {
+        return amazonConnector.getInstancesStates();
     }
 
     class printNumberOfInstances extends TimerTask {
@@ -125,12 +123,12 @@ class VMManager implements Runnable {
 			System.out.println("There are " + getNumberOfRunningInstances()
 					+ " instances running");
 			List<Instance> instances = getInstances();
-			String[] states = getInstancesStates();
-			if (instances.size() <= states.length) {
+			List<String> states = getInstancesStates();
+			if (instances.size() <= states.size()) {
 				for (int i = 0; i < instances.size(); i++) {
 					System.out.println("image ID: "
 							+ instances.get(i).getImageId() + " state: "
-							+ states[i]);
+							+ states.get(i));
 				}
 			} else {
 				System.err.println("collected more states than images");
