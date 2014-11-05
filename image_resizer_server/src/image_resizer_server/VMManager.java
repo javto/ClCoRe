@@ -1,7 +1,17 @@
 package image_resizer_server;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.swing.JOptionPane;
+
 import amazon.AmazonConnector;
-import com.amazonaws.services.ec2.AmazonEC2Client;
+
 import com.amazonaws.services.ec2.model.Instance;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
@@ -10,14 +20,6 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UIKeyboardInteractive;
 import com.jcraft.jsch.UserInfo;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import javax.swing.JOptionPane;
 
 /**
  * Singleton VMManager.
@@ -26,7 +28,6 @@ import javax.swing.JOptionPane;
  */
 class VMManager implements Runnable {
 
-    private AmazonEC2Client amazonEC2Client = null;
     private AmazonConnector amazonConnector = null;
     private ArrayList<VirtualMachine> machines;
     private static VMManager instance;
@@ -71,7 +72,6 @@ class VMManager implements Runnable {
         //startup the connection to amazon
         amazonConnector = new AmazonConnector(new File(
                 "amazonJaap.properties"), "amazon" + (int) (Math.random() * 1000));
-        amazonEC2Client = amazonConnector.getAmazonEC2Client();
 
         //prints the number of running instances every 10 seconds
         Timer timer = new Timer();
@@ -96,13 +96,29 @@ class VMManager implements Runnable {
     private void addInstances(int numberOfInstances) {
         amazonConnector.runInstances(numberOfInstances);
     }
+    
+    private String[] getInstancesStates() {
+        return amazonConnector.getStatesFromInstances();
+    }
 
     class printNumberOfInstances extends TimerTask {
 
-        public void run() {
-            System.out.println("There are " + getNumberOfRunningInstances() + " instances running");
-        }
-    }
+		public void run() {
+			System.out.println("There are " + getNumberOfRunningInstances()
+					+ " instances running");
+			List<Instance> instances = getInstances();
+			String[] states = getInstancesStates();
+			if (instances.size() <= states.length) {
+				for (int i = 0; i < instances.size(); i++) {
+					System.out.println("image ID: "
+							+ instances.get(i).getImageId() + " state: "
+							+ states[i]);
+				}
+			} else {
+				System.err.println("collected more states than images");
+			}
+		}
+	}
     
     /**
      * Connects to the host via SSH (using identity key) and performs given command.
