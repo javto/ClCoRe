@@ -95,8 +95,8 @@ class VMManager implements Runnable {
         amazonConnector.runInstances(numberOfInstances);
     }
     
-    private String[] getInstancesStates() {
-        return amazonConnector.getStatesFromInstances();
+    private List<String> getInstancesStates() {
+        return amazonConnector.getInstancesStates();
     }
 
     class printNumberOfInstances extends TimerTask {
@@ -105,12 +105,12 @@ class VMManager implements Runnable {
 			System.out.println("There are " + getNumberOfRunningInstances()
 					+ " instances running");
 			List<Instance> instances = getInstances();
-			String[] states = getInstancesStates();
-			if (instances.size() <= states.length) {
+			List<String> states = getInstancesStates();
+			if (instances.size() <= states.size()) {
 				for (int i = 0; i < instances.size(); i++) {
 					System.out.println("image ID: "
 							+ instances.get(i).getImageId() + " state: "
-							+ states[i]);
+							+ states.get(i));
 				}
 			} else {
 				System.err.println("collected more states than images");
