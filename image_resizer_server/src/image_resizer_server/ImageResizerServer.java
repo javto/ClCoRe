@@ -20,7 +20,7 @@ public class ImageResizerServer {
     public static void main(String[] args) {
         //run as master server
         if (args.length != 0 && "1".equals(args[0])) {
-            VMManager vmm = new VMManager();
+            VMManager vmm = VMManager.getInstance();
             //this thread monitors our running VMs and starts/stops them, depending on a load
             Thread vmm_thread = new Thread(vmm);
             vmm_thread.run();

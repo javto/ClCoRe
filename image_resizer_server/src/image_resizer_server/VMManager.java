@@ -13,22 +13,55 @@ import com.jcraft.jsch.UserInfo;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
- *
+ * Singleton VMManager.
  * @author Adam Kucera
  * @author Jaap
  */
 class VMManager implements Runnable {
 
-    AmazonEC2Client amazonEC2Client = null;
-    AmazonConnector amazonConnector = null;
+    private AmazonEC2Client amazonEC2Client = null;
+    private AmazonConnector amazonConnector = null;
+    private ArrayList<VirtualMachine> machines;
+    private static VMManager instance;
+
+    /**
+     * Gets the singleton instance of VMManager.
+     * @return 
+     */
+    public static VMManager getInstance() {
+        if (instance == null) {
+            instance = new VMManager();
+        }
+        return instance;
+    }
+    
+    /**
+     * Private constructor initializing array of machines.
+     */
+    private VMManager() {
+        machines = new ArrayList<>();
+    }
+    
+    /**
+     * Returns the list of running machines.
+     * @return List of Running VirtualMachines.
+     */
+    public ArrayList<VirtualMachine> getRunningMachines() {
+        ArrayList<VirtualMachine> running = new ArrayList<>();
+        for(VirtualMachine machine : machines) {
+            if(machine.isRunning()) {
+                running.add(machine);
+            }
+        }
+        return running;
+    }
 
     /**
      * start the amazonEC2client and check if we need less or more machines.
