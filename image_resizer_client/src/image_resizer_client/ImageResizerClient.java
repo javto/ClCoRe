@@ -2,6 +2,8 @@ package image_resizer_client;
 
 import com.beust.jcommander.JCommander;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Main class for client, it starts the connection.
@@ -17,25 +19,34 @@ public class ImageResizerClient {
         JCommanderParameters jcp = new JCommanderParameters();
         new JCommander(jcp, args);
 
-        //send file
-        ClientConnection connection = new ClientConnection();
+        //get host from the master server
+        ClientMasterConnection masterConnection = new ClientMasterConnection();
+        String host = "";
         try {
-            connection.sendFile(jcp.file);
-            connection.sendParameters(jcp);
+            host = masterConnection.getSlaveHost();
         } catch (IOException ex) {
-            System.err.println("Error when sending file to the server.");
+            System.err.println("Error when receiving slave host from the master server.");
+        }
+        System.out.println("Received slave server host: "+host);
+        //send file
+        ClientSlaveConnection slaveConnection = new ClientSlaveConnection(host);
+        try {
+            slaveConnection.sendFile(jcp.file);
+            slaveConnection.sendParameters(jcp);
+        } catch (IOException ex) {
+            System.err.println("Error when sending file to the slave server.");
             System.exit(1);
         }
         //and wait for receive
         try {
-            connection.receiveFile();
+            slaveConnection.receiveFile();
         } catch (IOException ex) {
-            System.err.println("Error when receiving file from the server"+ex.getMessage());
+            System.err.println("Error when receiving file from the slave server"+ex.getMessage());
             System.exit(1);
         }
         //close socket
         try {
-            connection.closeSocket();
+            slaveConnection.closeSocket();
         } catch (IOException ex) {
             System.err.println("Error when closing connection.");
         }

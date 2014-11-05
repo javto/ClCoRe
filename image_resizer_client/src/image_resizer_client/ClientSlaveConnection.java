@@ -16,11 +16,10 @@ import java.net.UnknownHostException;
  * Basic class for client connection. Handles sending and receiving.
  * @author Adam Kucera
  */
-public class ClientConnection {
+public class ClientSlaveConnection {
 
     private Socket socket;
-    //address has to be set to the MASTER server!
-    private final String server = "localhost";
+    private String server;
     //port has to be same.
     private final int port = 4020;
     private PrintStream so;
@@ -31,7 +30,8 @@ public class ClientConnection {
     /**
      * Connects client to the server.
      */
-    public ClientConnection() {
+    public ClientSlaveConnection(String host) {
+        server = host;
         try {
             socket = new Socket(server, port);
             //initialize streams

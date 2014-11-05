@@ -63,6 +63,24 @@ class VMManager implements Runnable {
         }
         return running;
     }
+    
+    public VirtualMachine getMachineWithLowestCPUUtilization() throws ImageResizerException {
+        VirtualMachine vm = null;
+        for(VirtualMachine machine : machines) {
+            if(machine.isRunning()) {
+                if(vm == null) {
+                    vm = machine;
+                }
+                if(machine.getProcessorUsage() < vm.getProcessorUsage()) {
+                    vm = machine;
+                }
+            }
+        }
+        if(vm == null) {
+            throw new ImageResizerException("No machine is available.");
+        }
+        return vm;
+    }
 
     /**
      * start the amazonEC2client and check if we need less or more machines.

@@ -12,27 +12,16 @@ public class ServerConnection {
 
     private ServerSocket socket;
     //has to be same port as on the client
-    private final int port = 4020;
+    private final int slavePort = 4020;
+    private final int masterPort = 4019;
     private int clientsCnt;
 
     /**
      * Creates new socket connection.
      * @throws IOException 
      */
-    public ServerConnection() throws IOException {
+    public ServerConnection() {
         this.clientsCnt = 0;
-
-        //try to start server
-        try {
-            socket = new ServerSocket(port);
-        } catch (IOException e) {
-            System.err.println("Could not listen on port: " + port);
-            System.out.println("server ending");
-
-            socket.close();
-            System.exit(1);
-        }
-
     }
 
     /**
@@ -41,6 +30,8 @@ public class ServerConnection {
      * @throws IOException 
      */
     public void runSlave() throws IOException {
+        startServer(slavePort);
+        
         Socket clientSocket = null;
         //endlessly accept clients
         while (true) {
@@ -64,7 +55,38 @@ public class ServerConnection {
      * Starts the connection as the master. It is responsible for load balancing
      * and sending the address of the slave machine back to the clients.
      */
-    public void runMaster() {
-        throw new UnsupportedOperationException("Not supported yet."); 
+    public void runMaster() throws IOException {
+        startServer(masterPort);
+        
+        Socket clientSocket = null;
+        //endlessly accept clients
+        while (true) {
+            try {
+                clientSocket = socket.accept();
+            } catch (IOException e) {
+                System.err.println("Accept failed.");
+                System.out.println("server ending");
+
+                socket.close();
+                System.exit(1);
+            }
+            //create object for each thread
+            ConnectedClientMaster client = new ConnectedClientMaster(clientsCnt++, clientSocket);
+            Thread t = new Thread(client);
+            t.start();
+        }
+    }
+    
+    private void startServer(int port) throws IOException {
+        //try to start server
+        try {
+            socket = new ServerSocket(port);
+        } catch (IOException e) {
+            System.err.println("Could not listen on port: " + port);
+            System.out.println("server ending");
+
+            socket.close();
+            System.exit(1);
+        }
     }
 }

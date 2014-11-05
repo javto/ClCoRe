@@ -9,20 +9,21 @@ import com.amazonaws.services.ec2.model.Instance;
 public class VirtualMachine {
 
     private Instance instance = null;
-    private boolean available = false;
 
     public VirtualMachine(Instance instance) {
         this.instance = instance;
-
-        available = instance.getState().getCode() == 16;
     }
 
     public boolean isRunning() {
-        return available;
+        return instance.getState().getCode() == 16;
     }
 
     public double getProcessorUsage() {
         if (isRunning()) {
+            //TODO: this is wrong! This asks the Monitor of the master, but it has to connect via SSH to instance
+            //and ask the monitor there!!
+            //or maybe via socket??? connect as a special client???
+            //or maybe the best solution is to send the information to the master every few seconds!
             return Monitor.getInstance().getLastEntry().getProcessorUsage();
         } else {
             return -1;
@@ -43,6 +44,13 @@ public class VirtualMachine {
         } else {
             return -1;
         }
+    }
+    
+    public String getHost() throws ImageResizerException {
+        if(instance == null) {
+            throw new ImageResizerException("Instance is not available.");
+        }
+        return instance.getPublicDnsName();
     }
 
 }
