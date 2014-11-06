@@ -2,9 +2,12 @@ package amazon;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -33,10 +36,14 @@ public class AmazonConnector {
 	AmazonEC2Client amazonEC2Client = null;
 	String securityGroupName = "Java Security Group Image server";
 	KeyPair amazonKey = null;
-	ArrayList<String> instanceIDsStrings = (ArrayList<String>) Arrays
-			.asList(new String[] { "i-f71ee4fb", "i-f01ee4fc", "i-f11ee4fd",
-					"i-f21ee4fe", "i-f31ee4ff" });
-	String keyPairName = "amazon775";
+	List<String> instanceIDsStrings = Arrays.asList(new String[] {
+			"i-de6acdd4", "i-d96acdd3", "i-d86acdd2", "i-db6acdd1",
+			"i-da6acdd0" });
+	public List<String> getInstanceIDsStrings() {
+		return instanceIDsStrings;
+	}
+
+	String keyPairName = "amazonConnection";
 
 	/**
 	 * connect to amazon cloud, must have an amazon.properties file as input and
@@ -70,6 +77,8 @@ public class AmazonConnector {
 		// createSecurityGroup(securityGroupName,
 		// "a security group for image_server with SSH enabled");
 		amazonKey = createKeyPair(keyName);
+		System.out.println(amazonKey.getKeyMaterial());
+		runInstances(5);
 	}
 
 	public AmazonConnector(File propertiesFile) {
@@ -145,8 +154,8 @@ public class AmazonConnector {
 		IpPermission ipPermission = new IpPermission();
 
 		// set up SSH access in the TU Delft (Starts with 145.94)
-		ipPermission.withIpRanges("145.94.0.0/32", "145.94.255.255/32")
-				.withIpProtocol("tcp").withFromPort(22).withToPort(22);
+		ipPermission.withIpRanges("145.94.0.0/16").withIpProtocol("tcp")
+				.withFromPort(22).withToPort(22);
 
 		AuthorizeSecurityGroupIngressRequest authorizeSecurityGroupIngressRequest = new AuthorizeSecurityGroupIngressRequest();
 
@@ -202,7 +211,7 @@ public class AmazonConnector {
 	 * @param instanceID
 	 * @return true if succeeded
 	 */
-	public boolean startInstances(String[] instanceIDCollection) {
+	public boolean startInstances(List<String> instanceIDCollection) {
 		StartInstancesRequest startInstancesRequest = new StartInstancesRequest();
 		startInstancesRequest.withInstanceIds(instanceIDCollection);
 		try {
@@ -225,7 +234,7 @@ public class AmazonConnector {
 	 * @param instanceID
 	 * @return true if succeeded
 	 */
-	public boolean stopInstances(String[] instanceIDCollection) {
+	public boolean stopInstances(List<String> instanceIDCollection) {
 		StopInstancesRequest stopInstancesRequest = new StopInstancesRequest();
 		stopInstancesRequest.withInstanceIds(instanceIDCollection);
 		try {
@@ -299,16 +308,16 @@ public class AmazonConnector {
 	}
 
 	/**
-	 * @return the states from the instances
+	 * @return the states from the instances, the map contains the state for the
+	 *         id of an instance
 	 */
-	public List<String> getInstancesStates() {
-		List<Instance> instances = getInstances();
-		List<String> result = new ArrayList<String>();
-
+	public Map<String, String> getInstancesStates(List<Instance> instances) {
+		Map<String, String> result = new HashMap<String, String>();
 		for (Instance instance : instances) {
-			if (!result.contains(instance.getState().getName())
-					&& instanceIDsStrings.contains(instance.getInstanceId())) {
-				result.add(instance.getState().getName());
+			if (instanceIDsStrings.contains(instance.getInstanceId())
+					&& result.containsKey(instance.getInstanceId())) {
+				result.put(instance.getInstanceId(), instance.getState()
+						.getName());
 			}
 		}
 		return result;
