@@ -5,6 +5,7 @@ import java.util.Date;
 
 /**
  * Class representing Virtual machine and its performance.
+ *
  * @author Adam Kucera
  */
 public class VirtualMachine {
@@ -12,8 +13,13 @@ public class VirtualMachine {
     private Instance instance = null;
     private LogEntry entry = null;
 
+    public Instance getInstance() {
+        return instance;
+    }
+
     /**
      * Initialize new machine.
+     *
      * @param instance Amazon instance.
      */
     public VirtualMachine(Instance instance) {
@@ -23,6 +29,7 @@ public class VirtualMachine {
 
     /**
      * Determines if the machine is running.
+     *
      * @return boolean
      */
     public boolean isRunning() {
@@ -31,6 +38,7 @@ public class VirtualMachine {
 
     /**
      * Gets the processor usage of the machine.
+     *
      * @return Processor usage.
      */
     public double getProcessorUsage() {
@@ -43,6 +51,7 @@ public class VirtualMachine {
 
     /**
      * Gets the memory usage of the machine.
+     *
      * @return Memory usage
      */
     public float getMemoryUsage() {
@@ -55,6 +64,7 @@ public class VirtualMachine {
 
     /**
      * Gets the number of current users of the machine.
+     *
      * @return Number of users.
      */
     public int getNumberOfUser() {
@@ -64,26 +74,28 @@ public class VirtualMachine {
             return -1;
         }
     }
-    
+
     /**
      * Gets the public DNS name of the machine
+     *
      * @return Public DNS name.
-     * @throws ImageResizerException 
+     * @throws ImageResizerException
      */
     public String getHost() throws ImageResizerException {
-        if(instance == null) {
+        if (instance == null) {
             throw new ImageResizerException("Instance is not available.");
         }
         return instance.getPublicDnsName();
     }
-    
-   /**
-    * Gets the public IP address of the machine.
-    * @return IP address
-    * @throws ImageResizerException 
-    */
-   public String getAddress() throws ImageResizerException {
-        if(instance == null) {
+
+    /**
+     * Gets the public IP address of the machine.
+     *
+     * @return IP address
+     * @throws ImageResizerException
+     */
+    public String getAddress() throws ImageResizerException {
+        if (instance == null) {
             throw new ImageResizerException("Instance is not available.");
         }
         return instance.getPublicIpAddress();
@@ -91,6 +103,7 @@ public class VirtualMachine {
 
     /**
      * Updates the machine with new performance data.
+     *
      * @param entry LogEntry
      */
     public void updatePerformance(LogEntry entry) {

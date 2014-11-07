@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -22,7 +23,7 @@ import com.jcraft.jsch.UIKeyboardInteractive;
 import com.jcraft.jsch.UserInfo;
 
 /**
- * Singleton VMManager.
+ * Singleton VMManager. 
  *
  * @author Adam Kucera
  * @author Jaap
@@ -53,25 +54,42 @@ class VMManager implements Runnable {
     }
 
     /**
-     * Returns the list of running machines.
-     *
-     * @return List of Running VirtualMachines.
+     * start the amazonEC2client and check if we need less or more machines.
      */
-    public ArrayList<VirtualMachine> getRunningMachines() {
-        ArrayList<VirtualMachine> running = new ArrayList<>();
-        for (VirtualMachine machine : machines) {
-            if (machine.isRunning()) {
-                running.add(machine);
-            }
+    @Override
+    public void run() {
+        boolean running = true;
+        // startup the connection to amazon
+        amazonConnector = new AmazonConnector(
+                new File(
+                        "image_resizer_server/src/image_resizer_server/amazonJaap.properties"));
+
+        // prints the number of running instances every 10 seconds
+        Timer timer = new Timer();
+        timer.schedule(new PrintNumberOfInstances(), 100, 10000);
+        timer.schedule(new PrintVMPool(), 100, 5000);
+		// System.out.println("start instances succeeded: "
+        // + startInstances(amazonConnector.getInstanceIDsStrings()));
+
+        List<Instance> instances = getInstances();
+        for (Instance instance : instances) {
+            machines.add(new VirtualMachine(instance));
         }
-        return running;
+
+        while (running) {
+
+            running = false;
+        }
+        System.out.println("stop instances succeeded: "
+                + stopInstances(amazonConnector.getInstanceIDsStrings()));
     }
 
     /**
-     * Basic method for load balancing, determines to which machine the job should
-     * be scheduled.
+     * Basic method for load balancing, determines to which machine the job
+     * should be scheduled.
+     *
      * @return Virtual machine
-     * @throws ImageResizerException 
+     * @throws ImageResizerException
      */
     //TODO: maybe this greedy policy isnt the best, we should also know, how 
     //many jobs are already being processed there?
@@ -95,9 +113,10 @@ class VMManager implements Runnable {
 
     /**
      * Updates the performance of a machine on the given address.
+     *
      * @param address IP address of machine
      * @param entry LogEntry representing performance
-     * @throws ImageResizerException 
+     * @throws ImageResizerException
      */
     public void updateMachinePerformance(String address, LogEntry entry) throws ImageResizerException {
         VirtualMachine vm = null;
@@ -114,31 +133,12 @@ class VMManager implements Runnable {
             System.err.println(ex.getMessage());
         }
         if (vm == null) {
-            throw new ImageResizerException("No machine with address "+ address +" is available.");
+            throw new ImageResizerException("No machine with address " + address + " is available.");
         }
         vm.updatePerformance(entry);
     }
 
-    /**
-     * start the amazonEC2client and check if we need less or more machines.
-     */
-    @Override
-    public void run() {
-        //startup the connection to amazon
-        amazonConnector = new AmazonConnector(new File(
-                "amazonJaap.properties"));
-
-        //prints the number of running instances every 10 seconds
-        Timer timer = new Timer();
-        timer.schedule(new printNumberOfInstances(), 100, 10000);
-
-        while (true) {
-            //TODO check if we need more or less instances
-
-        }
-    }
-
-    private int getNumberOfRunningInstances() {
+    private int getNumberOfInstances() {
         return getInstances() != null ? getInstances().size() : -1;
     }
 
@@ -150,27 +150,44 @@ class VMManager implements Runnable {
         amazonConnector.runInstances(numberOfInstances);
     }
 
-    private List<String> getInstancesStates() {
-        return amazonConnector.getInstancesStates();
+    private boolean startInstances(List<String> instanceIDs) {
+        return amazonConnector.startInstances(instanceIDs);
     }
 
-    class printNumberOfInstances extends TimerTask {
+    private boolean stopInstances(List<String> instanceIDs) {
+        return amazonConnector.stopInstances(instanceIDs);
+    }
+
+    private Map<String, String> getInstancesStates(List<Instance> instances) {
+        return amazonConnector.getInstancesStates(instances);
+    }
+
+    class PrintVMPool extends TimerTask {
 
         public void run() {
-            System.out.println("There are " + getNumberOfRunningInstances()
-                    + " instances running");
-            List<Instance> instances = getInstances();
-            List<String> states = getInstancesStates();
-            if (instances.size() <= states.size()) {
-                for (int i = 0; i < instances.size(); i++) {
-                    System.out.println("image ID: "
-                            + instances.get(i).getImageId() + " state: "
-                            + states.get(i));
-                }
-            } else {
-                System.err.println("collected more states than images");
+            for (VirtualMachine machine : machines) {
+                System.out.println("machine: "
+                        + machine.getInstance().getInstanceId()
+                        + " isRunning: " + machine.isRunning());
             }
         }
+    }
+
+    class PrintNumberOfInstances extends TimerTask {
+
+        public void run() {
+            List<Instance> instances = getInstances();
+            Map<String, String> states = getInstancesStates(instances);
+            for (int i = 0; i < instances.size(); i++) {
+                System.out.println("image ID: " + instances.get(i).getImageId()
+                        + " state: "
+                        + states.get(instances.get(i).getInstanceId()));
+            }
+        }
+    }
+
+    public ArrayList<VirtualMachine> getMachines() {
+        return machines;
     }
 
     /**
@@ -181,14 +198,15 @@ class VMManager implements Runnable {
      * @param ssh_key identity key for SSH
      * @param command command to be performed
      */
-    public void startApplicationViaSSH(String host, String ssh_key, String command) {
+    public void startApplicationViaSSH(String host, String ssh_key,
+            String command) {
         JSch jsch = new JSch();
-        String user = "ubuntu";
+        String user = "ec2-user";
 
         try {
-            //add identity key
+            // add identity key
             jsch.addIdentity(ssh_key);
-            //create new session
+            // create new session
             Session session = jsch.getSession(user, host);
             UserInfo ui = new MyUserInfo() {
                 public void showMessage(String message) {
@@ -197,23 +215,21 @@ class VMManager implements Runnable {
 
                 public boolean promptYesNo(String message) {
                     Object[] options = {"yes", "no"};
-                    int foo = JOptionPane.showOptionDialog(null,
-                            message,
-                            "Warning",
-                            JOptionPane.DEFAULT_OPTION,
-                            JOptionPane.WARNING_MESSAGE,
-                            null, options, options[0]);
+                    int foo = JOptionPane.showOptionDialog(null, message,
+                            "Warning", JOptionPane.DEFAULT_OPTION,
+                            JOptionPane.WARNING_MESSAGE, null, options,
+                            options[0]);
                     return foo == 0;
                 }
             };
             session.setUserInfo(ui);
-            //dont check key footprints
+            // dont check key footprints
             session.setConfig("StrictHostKeyChecking", "no");
-            //connect to SSH
+            // connect to SSH
             session.connect();
 
             System.out.println("Connected to the server " + host);
-            //perform the command
+            // perform the command
             startSlaveApplication(session, command);
         } catch (JSchException ex) {
             System.err.println("Unable to connect to SSH.");
@@ -228,14 +244,15 @@ class VMManager implements Runnable {
      * @param command command to be performed
      * @throws JSchException
      */
-    private void startSlaveApplication(Session session, String command) throws JSchException {
-        //perform the command
+    private void startSlaveApplication(Session session, String command)
+            throws JSchException {
+        // perform the command
         Channel channel = session.openChannel("exec");
         ((ChannelExec) channel).setCommand(command);
         channel.setInputStream(null);
         ((ChannelExec) channel).setErrStream(System.err);
 
-        //get the result
+        // get the result
         try {
             InputStream in = channel.getInputStream();
 
@@ -255,7 +272,8 @@ class VMManager implements Runnable {
                     if (in.available() > 0) {
                         continue;
                     }
-                    System.out.println("exit-status: " + channel.getExitStatus());
+                    System.out.println("exit-status: "
+                            + channel.getExitStatus());
                     break;
                 }
                 try {
@@ -266,7 +284,7 @@ class VMManager implements Runnable {
         } catch (IOException ex) {
             System.err.println("Error when reading from the server.");
         }
-        //end the connection
+        // end the connection
         channel.disconnect();
         session.disconnect();
     }
@@ -275,8 +293,8 @@ class VMManager implements Runnable {
      * Abstract class required for SSH communication code from
      * http://www.jcraft.com/jsch/examples/Shell.java.html
      */
-    public static abstract class MyUserInfo
-            implements UserInfo, UIKeyboardInteractive {
+    public static abstract class MyUserInfo implements UserInfo,
+            UIKeyboardInteractive {
 
         @Override
         public String getPassword() {
@@ -309,10 +327,7 @@ class VMManager implements Runnable {
 
         @Override
         public String[] promptKeyboardInteractive(String destination,
-                String name,
-                String instruction,
-                String[] prompt,
-                boolean[] echo) {
+                String name, String instruction, String[] prompt, boolean[] echo) {
             return null;
         }
     }
