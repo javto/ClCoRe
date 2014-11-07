@@ -33,6 +33,8 @@ class VMManager implements Runnable {
 	private AmazonConnector amazonConnector = null;
 	private ArrayList<VirtualMachine> machines;
 	private static VMManager instance;
+	//in miliseconds:
+	private final int UPDATETIME = 100; 
 
 	/**
 	 * Gets the singleton instance of VMManager.
@@ -102,20 +104,41 @@ class VMManager implements Runnable {
 		Timer timer = new Timer();
 		timer.schedule(new PrintNumberOfInstances(), 100, 10000);
 		timer.schedule(new PrintVMPool(), 100, 5000);
-		// System.out.println("start instances succeeded: "
-		// + startInstances(amazonConnector.getInstanceIDsStrings()));
+		System.out.println("start instances succeeded: "
+				+ startInstances(amazonConnector.getInstanceIDsStrings()));
 
 		List<Instance> instances = getInstances();
 		for (Instance instance : instances) {
 			machines.add(new VirtualMachine(instance));
 		}
-
+		long startTime = System.currentTimeMillis();
+		long stopTime = 0;
 		while (running) {
+			// check if a new machine needs to be started
+			// check load for all machines, if load divided by machines is above
+			// threshold, add machine
 
-			running = false;
+			// check if a machine needs to be stopped
+			// check load for all machines, if load on a machine is zero and
+			// total load is below threshold, remove it
+			
+			//update machine info
+			try {
+				Thread.sleep(UPDATETIME);
+			} catch (InterruptedException e) {
+				running = false;
+			}
+			stopTime = System.currentTimeMillis();
+			if (stopTime - startTime > 60000) {
+				running = false;
+			}
 		}
+
+		//end the thread
 		System.out.println("stop instances succeeded: "
 				+ stopInstances(amazonConnector.getInstanceIDsStrings()));
+		timer.cancel();
+
 	}
 
 	private int getNumberOfInstances() {
