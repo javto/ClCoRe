@@ -73,7 +73,7 @@ public class ImageHandler {
         BufferedImage resized = resizeImage(width, height);
         //write new image
         ImageIO.write(resized, extension, new File(resizedFilename));
-        System.out.println("Image " + width + "x" + height + " written into " + resizedFilename);
+        //System.out.println("Image " + width + "x" + height + " written into " + resizedFilename);
     }
 
 }

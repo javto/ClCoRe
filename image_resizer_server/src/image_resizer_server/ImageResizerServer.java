@@ -25,7 +25,7 @@ public class ImageResizerServer {
             VMManager vmm = VMManager.getInstance();
             //this thread monitors our running VMs and starts/stops them, depending on a load
             Thread vmm_thread = new Thread(vmm);
-            vmm_thread.start();
+            //vmm_thread.start();
             //start monitor connection thread responsible for updating information about machines
             MonitorConnection mc;
             try {

@@ -14,6 +14,7 @@ import java.net.UnknownHostException;
 
 /**
  * Basic class for client connection. Handles sending and receiving.
+ *
  * @author Adam Kucera
  */
 public class ClientSlaveConnection {
@@ -46,16 +47,16 @@ public class ClientSlaveConnection {
     }
 
     /**
-     * Sends the file to the server.
-     * inspired from http://stackoverflow.com/questions/4775617/file-uploading-downloading-between-server-client
+     * Sends the file to the server. inspired from
+     * http://stackoverflow.com/questions/4775617/file-uploading-downloading-between-server-client
      * almost the same as in the server application.
-     * 
+     *
      * @param file file to be sent
      * @throws IOException
      */
     public void sendFile(File file) throws IOException {
         if (so != null) {
-            byte[] bytearray = new byte[(int) file.length()];
+            byte[] bytearray = new byte[1024 * 1024];
             FileInputStream fis = null;
 
             try {
@@ -64,14 +65,20 @@ public class ClientSlaveConnection {
                 System.err.println("Error when reading file.");
             }
             BufferedInputStream bis = new BufferedInputStream(fis);
-
+            int bytesRead = bis.read(bytearray);
+            int bytesWritten = 0;
             try {
-                bis.read(bytearray, 0, bytearray.length);
+                do {
+                    so.write(bytearray, 0, bytesRead);
+                    bytesWritten += bytesRead;
+                    bytesRead = bis.read(bytearray);
+                } while (bytesRead != -1);
+
             } catch (IOException ex) {
                 System.err.println("Error when sending file.");
             }
             System.out.println("Sending (" + bytearray.length + " bytes)");
-            so.write(bytearray, 0, bytearray.length);
+
             so.flush();
             bis.close();
             socket.shutdownOutput();
@@ -80,8 +87,8 @@ public class ClientSlaveConnection {
     }
 
     /**
-     * Sends the parameters to the server.
-     * TODO to be done
+     * Sends the parameters to the server. TODO to be done
+     *
      * @param jcp parameters to be sent
      */
     public void sendParameters(JCommanderParameters jcp) {
@@ -90,7 +97,8 @@ public class ClientSlaveConnection {
 
     /**
      * Closes the connection.
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     public void closeSocket() throws IOException {
         si.close();
@@ -98,17 +106,17 @@ public class ClientSlaveConnection {
     }
 
     /**
-     * Receives the file from the server.
-     * Almost the same as in the server part.
-     * @throws IOException 
+     * Receives the file from the server. Almost the same as in the server part.
+     *
+     * @throws IOException
      */
     public void receiveFile() throws IOException {
-        System.out.println("Receiving file...");
+        System.out.println("Waiting for files to be processed and receiving file...");
         si = new BufferedInputStream(socket.getInputStream());
         File file = new File(RECEIVED_FILE + ".zip");
         if (si != null) {
             FileOutputStream fos = null;
-            byte[] b = new byte[1];
+            byte[] b = new byte[1024 * 1024];
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
             try {
@@ -117,31 +125,13 @@ public class ClientSlaveConnection {
                 System.err.println("Error when creating file.");
             }
             BufferedOutputStream bos = new BufferedOutputStream(fos);
-            int bytesRead = 0;
-            try {
-                bytesRead = si.read(b, 0, b.length);
-            } catch (IOException ex) {
-                System.err.println("Error when reading first byte.");
-            }
-
+            int bytesRead = si.read(b, 0, b.length);
             do {
-                try {
-                    baos.write(b);
-                } catch (IOException ex) {
-                    System.err.println("Error when writing bytes.");
-                }
-                try {
-                    bytesRead = si.read(b);
-                } catch (IOException ex) {
-                    System.err.println("Error when reading next bytes.");
-                }
-            } while (bytesRead != -1);
-
-            try {
+                baos.write(b, 0, bytesRead);
+                bytesRead = si.read(b);
                 bos.write(baos.toByteArray());
-            } catch (IOException ex) {
-                System.err.println("Error when writing buffer.");
-            }
+                baos.reset();
+            } while (bytesRead != -1);
             bos.flush();
             bos.close();
         }

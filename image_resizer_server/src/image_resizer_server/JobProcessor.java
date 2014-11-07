@@ -15,7 +15,7 @@ public class JobProcessor implements Runnable {
     private static final String TMP_DIR = "tmp";
     private static final String IMAGES_DIR = "images";
     //how many images in a batch - maximum in memory
-    private static final int BATCH_SIZE = 50;
+    private static final int BATCH_SIZE = 10;
 
     /**
      * If the file is bigger then certain treshold, we dont want to store all
@@ -29,6 +29,7 @@ public class JobProcessor implements Runnable {
      * @throws java.io.IOException
      */
     public void processZip(File file, JCommanderParameters jcp, int client_id) throws IOException {
+        System.out.println("Processing zip "+ file.getName());
         ZipHandler zip_handler = new ZipHandler(file);
         //files to be processed in memory
         if (zip_handler.getNumFiles() < BATCH_SIZE) {
@@ -50,7 +51,7 @@ public class JobProcessor implements Runnable {
             for (int i = 0; i < num_files; i++) {
                 Image image = new Image(files[i]);
                 list.add(image);
-                if (i > 0 && i - 1 % BATCH_SIZE == 0) {
+                if (i > 0 && i % BATCH_SIZE == 0) {
                     System.out.println("Processing new batch.");
                     processImages(list, jcp, client_id);
                     list.clear();
