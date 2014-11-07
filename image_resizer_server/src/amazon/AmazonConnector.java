@@ -315,7 +315,7 @@ public class AmazonConnector {
 		Map<String, String> result = new HashMap<String, String>();
 		for (Instance instance : instances) {
 			if (instanceIDsStrings.contains(instance.getInstanceId())
-					&& result.containsKey(instance.getInstanceId())) {
+					&& !result.containsKey(instance.getInstanceId())) {
 				result.put(instance.getInstanceId(), instance.getState()
 						.getName());
 			}

@@ -17,6 +17,9 @@ public class VirtualMachine {
         return instance;
     }
 
+    public void setInstance(Instance instance) {
+    	this.instance = instance;
+    }
     /**
      * Initialize new machine.
      *
