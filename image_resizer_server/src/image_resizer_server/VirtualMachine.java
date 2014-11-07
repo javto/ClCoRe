@@ -7,10 +7,14 @@ import com.amazonaws.services.ec2.model.Instance;
  * @author Adam Kucera
  */
 public class VirtualMachine {
+	
+	private Instance instance = null;
 
-    private Instance instance = null;
+    public Instance getInstance() {
+		return instance;
+	}
 
-    public VirtualMachine(Instance instance) {
+	public VirtualMachine(Instance instance) {
         this.instance = instance;
     }
 

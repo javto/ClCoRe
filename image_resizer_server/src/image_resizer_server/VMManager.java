@@ -100,10 +100,18 @@ class VMManager implements Runnable {
 
 		// prints the number of running instances every 10 seconds
 		Timer timer = new Timer();
-		timer.schedule(new printNumberOfInstances(), 100, 10000);
-		System.out.println("start instances succeeded: "
-				+ startInstances(amazonConnector.getInstanceIDsStrings()));
+		timer.schedule(new PrintNumberOfInstances(), 100, 10000);
+		timer.schedule(new PrintVMPool(), 100, 5000);
+		// System.out.println("start instances succeeded: "
+		// + startInstances(amazonConnector.getInstanceIDsStrings()));
+
+		List<Instance> instances = getInstances();
+		for (Instance instance : instances) {
+			machines.add(new VirtualMachine(instance));
+		}
+
 		while (running) {
+
 			running = false;
 		}
 		System.out.println("stop instances succeeded: "
@@ -134,23 +142,32 @@ class VMManager implements Runnable {
 		return amazonConnector.getInstancesStates(instances);
 	}
 
-	class printNumberOfInstances extends TimerTask {
+	class PrintVMPool extends TimerTask {
 
 		public void run() {
-			System.out.println("There are " + getNumberOfInstances()
-					+ " instances running");
-			List<Instance> instances = getInstances();
-			Map<String, String> states = getInstancesStates(instances);
-			if (instances.size() <= states.size()) {
-				for (int i = 0; i < instances.size(); i++) {
-					System.out.println("image ID: "
-							+ instances.get(i).getImageId() + " state: "
-							+ states.get(instances.get(i).getInstanceId()));
-				}
-			} else {
-				System.err.println("collected more states than images");
+			for (VirtualMachine machine : machines) {
+				System.out.println("machine: "
+						+ machine.getInstance().getInstanceId()
+						+ " isRunning: " + machine.isRunning());
 			}
 		}
+	}
+
+	class PrintNumberOfInstances extends TimerTask {
+
+		public void run() {
+			List<Instance> instances = getInstances();
+			Map<String, String> states = getInstancesStates(instances);
+			for (int i = 0; i < instances.size(); i++) {
+				System.out.println("image ID: " + instances.get(i).getImageId()
+						+ " state: "
+						+ states.get(instances.get(i).getInstanceId()));
+			}
+		}
+	}
+
+	public ArrayList<VirtualMachine> getMachines() {
+		return machines;
 	}
 
 	/**
