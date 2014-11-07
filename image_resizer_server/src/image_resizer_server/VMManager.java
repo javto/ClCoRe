@@ -23,6 +23,7 @@ import com.jcraft.jsch.UserInfo;
 
 /**
  * Singleton VMManager.
+ *
  * @author Adam Kucera
  * @author Jaap
  */
@@ -34,7 +35,8 @@ class VMManager implements Runnable {
 
     /**
      * Gets the singleton instance of VMManager.
-     * @return 
+     *
+     * @return
      */
     public static VMManager getInstance() {
         if (instance == null) {
@@ -42,44 +44,79 @@ class VMManager implements Runnable {
         }
         return instance;
     }
-    
+
     /**
      * Private constructor initializing array of machines.
      */
     private VMManager() {
         machines = new ArrayList<>();
     }
-    
+
     /**
      * Returns the list of running machines.
+     *
      * @return List of Running VirtualMachines.
      */
     public ArrayList<VirtualMachine> getRunningMachines() {
         ArrayList<VirtualMachine> running = new ArrayList<>();
-        for(VirtualMachine machine : machines) {
-            if(machine.isRunning()) {
+        for (VirtualMachine machine : machines) {
+            if (machine.isRunning()) {
                 running.add(machine);
             }
         }
         return running;
     }
-    
+
+    /**
+     * Basic method for load balancing, determines to which machine the job should
+     * be scheduled.
+     * @return Virtual machine
+     * @throws ImageResizerException 
+     */
+    //TODO: maybe this greedy policy isnt the best, we should also know, how 
+    //many jobs are already being processed there?
     public VirtualMachine getMachineWithLowestCPUUtilization() throws ImageResizerException {
         VirtualMachine vm = null;
-        for(VirtualMachine machine : machines) {
-            if(machine.isRunning()) {
-                if(vm == null) {
+        for (VirtualMachine machine : machines) {
+            if (machine.isRunning()) {
+                if (vm == null) {
                     vm = machine;
                 }
-                if(machine.getProcessorUsage() < vm.getProcessorUsage()) {
+                if (machine.getProcessorUsage() < vm.getProcessorUsage()) {
                     vm = machine;
                 }
             }
         }
-        if(vm == null) {
+        if (vm == null) {
             throw new ImageResizerException("No machine is available.");
         }
         return vm;
+    }
+
+    /**
+     * Updates the performance of a machine on the given address.
+     * @param address IP address of machine
+     * @param entry LogEntry representing performance
+     * @throws ImageResizerException 
+     */
+    public void updateMachinePerformance(String address, LogEntry entry) throws ImageResizerException {
+        VirtualMachine vm = null;
+        try {
+            for (VirtualMachine machine : machines) {
+                if (machine.isRunning()) {
+                    if (machine.getAddress().equals(address)) {
+                        vm = machine;
+                        break;
+                    }
+                }
+            }
+        } catch (ImageResizerException ex) {
+            System.err.println(ex.getMessage());
+        }
+        if (vm == null) {
+            throw new ImageResizerException("No machine with address "+ address +" is available.");
+        }
+        vm.updatePerformance(entry);
     }
 
     /**
@@ -112,33 +149,34 @@ class VMManager implements Runnable {
     private void addInstances(int numberOfInstances) {
         amazonConnector.runInstances(numberOfInstances);
     }
-    
+
     private List<String> getInstancesStates() {
         return amazonConnector.getInstancesStates();
     }
 
     class printNumberOfInstances extends TimerTask {
 
-		public void run() {
-			System.out.println("There are " + getNumberOfRunningInstances()
-					+ " instances running");
-			List<Instance> instances = getInstances();
-			List<String> states = getInstancesStates();
-			if (instances.size() <= states.size()) {
-				for (int i = 0; i < instances.size(); i++) {
-					System.out.println("image ID: "
-							+ instances.get(i).getImageId() + " state: "
-							+ states.get(i));
-				}
-			} else {
-				System.err.println("collected more states than images");
-			}
-		}
-	}
-    
+        public void run() {
+            System.out.println("There are " + getNumberOfRunningInstances()
+                    + " instances running");
+            List<Instance> instances = getInstances();
+            List<String> states = getInstancesStates();
+            if (instances.size() <= states.size()) {
+                for (int i = 0; i < instances.size(); i++) {
+                    System.out.println("image ID: "
+                            + instances.get(i).getImageId() + " state: "
+                            + states.get(i));
+                }
+            } else {
+                System.err.println("collected more states than images");
+            }
+        }
+    }
+
     /**
-     * Connects to the host via SSH (using identity key) and performs given command.
-     * code from http://www.jcraft.com/jsch/examples/Shell.java.html
+     * Connects to the host via SSH (using identity key) and performs given
+     * command. code from http://www.jcraft.com/jsch/examples/Shell.java.html
+     *
      * @param host host public IP or DNS
      * @param ssh_key identity key for SSH
      * @param command command to be performed
@@ -183,11 +221,12 @@ class VMManager implements Runnable {
     }
 
     /**
-     * Executes given command on SSH session.
-     * code from http://www.jcraft.com/jsch/examples/Exec.java.html
+     * Executes given command on SSH session. code from
+     * http://www.jcraft.com/jsch/examples/Exec.java.html
+     *
      * @param session SSH session
      * @param command command to be performed
-     * @throws JSchException 
+     * @throws JSchException
      */
     private void startSlaveApplication(Session session, String command) throws JSchException {
         //perform the command
@@ -233,8 +272,8 @@ class VMManager implements Runnable {
     }
 
     /**
-     * Abstract class required for SSH communication
-     * code from http://www.jcraft.com/jsch/examples/Shell.java.html
+     * Abstract class required for SSH communication code from
+     * http://www.jcraft.com/jsch/examples/Shell.java.html
      */
     public static abstract class MyUserInfo
             implements UserInfo, UIKeyboardInteractive {

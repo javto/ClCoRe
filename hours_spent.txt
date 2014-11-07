@@ -7,7 +7,7 @@ Adam: 8
 Jaap: 5
 
 the dev-time =
-Adam: 20
+Adam: 22
 Jaap: 4
 
 the xp-time = 
@@ -23,6 +23,6 @@ Adam:
 Jaap:
 
 the wasted-time = 
-Adam: 1
+Adam: 2
 Jaap:
 

@@ -1,12 +1,13 @@
 package image_resizer_server;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Class representing an Entry in the Monitor log.
  * @author Adam Kucera
  */
-public class LogEntry {
+public class LogEntry implements Serializable {
     private final Date d;
     private final double processor_usage;
     private final float memory_usage;
