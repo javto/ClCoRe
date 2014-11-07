@@ -2,6 +2,9 @@ package image_resizer_server;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -12,6 +15,7 @@ import org.hyperic.sigar.SigarException;
 
 /**
  * Class responsible for monitoring performance of slave machines.
+ *
  * @author Adam Kucera
  */
 public class Monitor extends TimerTask {
@@ -19,13 +23,14 @@ public class Monitor extends TimerTask {
     private Sigar sigar = new Sigar();
     private ArrayList<LogEntry> log;
     private static Monitor instance = null;
-    
+
     public static Monitor getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new Monitor();
         }
         return instance;
     }
+
     /**
      * Initializes Monitor.
      */
@@ -34,8 +39,8 @@ public class Monitor extends TimerTask {
     }
 
     /**
-     * This method is run by Timer every second to insert new performance information
-     * in the log.
+     * This method is run by Timer every second to insert new performance
+     * information in the log.
      */
     @Override
     public void run() {
@@ -58,8 +63,12 @@ public class Monitor extends TimerTask {
         if (log.size() % 30 == 0) {
             this.generateLog();
         }
+        if (log.size() % 5 == 0) {
+            this.serializeCurrentState();
+        }
+
     }
-    
+
     /**
      * Generates the log file from the items in log array.
      */
@@ -86,7 +95,21 @@ public class Monitor extends TimerTask {
         pw.close();
     }
 
+    //from http://www.tutorialspoint.com/java/java_serialization.htm
+    private void serializeCurrentState() {
+        LogEntry e = this.getLastEntry();
+        try {
+            FileOutputStream fileOut = new FileOutputStream("logentry.ser");
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(e);
+            out.close();
+            fileOut.close();
+        } catch (IOException i) {
+            System.err.println("Error when serializing LogEntry.");
+        }
+    }
+
     public LogEntry getLastEntry() {
-        return log.get(log.size());
+        return log.get(log.size() - 1);
     }
 }
