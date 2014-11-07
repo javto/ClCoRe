@@ -34,11 +34,17 @@ class VMManager implements Runnable {
 	private ArrayList<VirtualMachine> machines;
 	private static VMManager instance;
 	// in miliseconds, how long should the while loop sleep per iteration:
-	private final int UPDATETIME = 100;
+	private static final int UPDATETIME = 100;
 
 	// in miliseconds, how long should the while loop run (should be infinite in
 	// rl, but for testing purposes):
-	private final int RUNTIME = 120000;
+	private static final int RUNTIME = 120000;
+
+	// above which utilization should a new machine be started
+	private static final double THRESHHOLDHIGH = 0.7;
+
+	// under which utilization should a machine be stopped
+	private static final double THRESHHOLDLOW = 0.3;
 
 	/**
 	 * Gets the singleton instance of VMManager.
@@ -84,28 +90,41 @@ class VMManager implements Runnable {
 		long startTime = System.currentTimeMillis();
 		long stopTime = 0;
 		while (running) {
-			// check if a new machine needs to be started
-			// check load for all machines, if load divided by machines is above
-			// threshold, add machine
-
-			// check if a machine needs to be stopped
-			// check load for all machines, if load on a machine is zero and
-			// total load is below threshold, remove it
-
 			// update machine info
+			updateInstances(getInstances());
+
+			double loadCPU = getNormalizedCPULoad();
+			float loadMem = getNormalizedMemoryLoad();
+
+			// check if a new machine needs to be started
+			if (loadCPU > THRESHHOLDHIGH || loadMem > THRESHHOLDHIGH) {
+				// add machine (could actually start more machines at one time
+				boolean started = startMachine(1);
+				if(!started) {
+					System.out.println("all machines are in use and we would want more");
+					//TODO: maybe send a signal that no new tasks should be accepted
+				}
+			}
+			// check if a machine needs to be stopped
+			else if (loadCPU < THRESHHOLDLOW || loadMem < THRESHHOLDLOW) {
+				// stop machine with lowest load, preferably zero, otherwise
+				// don't send any tasks anymore
+				
+			}
+
 			try {
 				Thread.sleep(UPDATETIME);
 			} catch (InterruptedException e) {
 				running = false;
 			}
-			updateInstances(getInstances());
+
 			stopTime = System.currentTimeMillis();
 			if (stopTime - startTime > RUNTIME) {
 				running = false;
 			}
 		}
 
-		// end the thread
+		// end the thread here
 
 		// stop instances and check if succeeded:
 		System.out.println("stop instances succeeded: "
@@ -113,6 +132,55 @@ class VMManager implements Runnable {
 		// stop timed tasks
 		timer.cancel();
 
+		// thread can now be dead
+	}
+
+	/**
+	 * start a machine which isn't running yet
+	 * @param numberOfMachines to start
+	 * @return if succeeded return true, otherwise false
+	 */
+	private boolean startMachine(int numberOfMachines) {
+		int count = numberOfMachines;
+		boolean result = false;
+		for(VirtualMachine vm : machines) {
+			if(!vm.isRunning()) {
+				List<String> vmStarting = new ArrayList<String>();
+				vmStarting.add(vm.getInstance().getInstanceId());
+				result = startInstances(vmStarting);
+				count--;
+			} 
+			if(count <= 0 ) {
+				break;
+			}
+		}
+		return result;
+	}
+
+	private double getNormalizedCPULoad() {
+		double result = 0.0;
+		int counter = 0;
+		for (VirtualMachine vm : machines) {
+			if (vm.isRunning()) {
+				counter++;
+				result += vm.getProcessorUsage();
+			}
+		}
+		result /= counter;
+		return result;
+	}
+
+	private float getNormalizedMemoryLoad() {
+		float result = 0.0f;
+		int counter = 0;
+		for (VirtualMachine vm : machines) {
+			if (vm.isRunning()) {
+				counter++;
+				result += vm.getMemoryUsage();
+			}
+		}
+		result /= counter;
+		return result;
 	}
 
 	/**
