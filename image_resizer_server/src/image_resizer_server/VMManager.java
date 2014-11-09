@@ -156,10 +156,10 @@ class VMManager implements Runnable {
                 running = false;
             }
 
-            stopTime = System.currentTimeMillis();
-            if (stopTime - startTime > RUNTIME) {
-                running = false;
-            }
+//            stopTime = System.currentTimeMillis();
+//            if (stopTime - startTime > RUNTIME) {
+//                running = false;
+//            }
         }
 
 		// end the thread here
@@ -304,7 +304,7 @@ class VMManager implements Runnable {
 				}
 			}
 		}
-		if (vm == null) {
+		if (vm == null && !forStopping) {
 			throw new ImageResizerException("No machine is available.");
 		}
 		return vm;
