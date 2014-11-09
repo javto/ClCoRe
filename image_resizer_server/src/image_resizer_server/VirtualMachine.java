@@ -12,8 +12,17 @@ public class VirtualMachine {
 
     private Instance instance = null;
     private LogEntry entry = null;
+    private boolean shutdown = false;
 
-    public Instance getInstance() {
+    public boolean isShutdown() {
+		return shutdown;
+	}
+
+	public void setShutdown(boolean shutdown) {
+		this.shutdown = shutdown;
+	}
+
+	public Instance getInstance() {
         return instance;
     }
 
