@@ -98,20 +98,37 @@ class VMManager implements Runnable {
 
 			// check if a new machine needs to be started
 			if (loadCPU > THRESHHOLDHIGH || loadMem > THRESHHOLDHIGH) {
-				// add machine (could actually start more machines at one time
+				// add machine ,could actually start more machines at one time
 				boolean started = startMachine(1);
-				if(!started) {
-					System.out.println("all machines are in use and we would want more");
-					//TODO: maybe send a signal that no new tasks should be accepted
+				if (!started) {
+					System.out
+							.println("all machines are in use and we would want more");
+					// TODO: maybe send a signal that no new tasks should be
+					// accepted
 				}
 			}
 			// check if a machine needs to be stopped
 			else if (loadCPU < THRESHHOLDLOW || loadMem < THRESHHOLDLOW) {
 				// stop machine with lowest load, preferably zero, otherwise
 				// don't send any tasks anymore
-				
+				try {
+					shutdownMachine(getMachineWithLowestCPUUtilization().getInstance().getInstanceId());
+				} catch (ImageResizerException e) {
+					e.printStackTrace();
+					e.getMessage();
+				}
 			}
 
+			//kill all machines that have no running tasks and are meant to be shutdown
+			for(VirtualMachine vm : machines) {
+				//TODO: check for number of tasks also!
+				List<String> toShutdown = new ArrayList<String>();
+				if(vm.isShutdown() && vm.getNumberOfUser() == 0) {
+					toShutdown.add(vm.getInstance().getInstanceId());
+				}
+				killMachines(toShutdown);
+			}
+			
 			try {
 				Thread.sleep(UPDATETIME);
 			} catch (InterruptedException e) {
@@ -136,23 +153,48 @@ class VMManager implements Runnable {
 	}
 
 	/**
+	 * stop machines with a certain instance ID
+	 * 
+	 * @param instanceID
+	 * @return if succeeded return true, otherwise false
+	 */
+	private boolean killMachines(List<String> instanceID) {
+		boolean result = false;
+		result = stopInstances(instanceID);
+		return result;
+	}
+
+	private void shutdownMachine(String instanceID) {
+		for (VirtualMachine vm : machines) {
+			if (vm.getInstance().getInstanceId().equals(instanceID)) {
+				vm.setShutdown(true);
+			}
+		}
+	}
+
+	/**
 	 * start a machine which isn't running yet
-	 * @param numberOfMachines to start
+	 * 
+	 * @param numberOfMachines
+	 *            to start
 	 * @return if succeeded return true, otherwise false
 	 */
 	private boolean startMachine(int numberOfMachines) {
 		int count = numberOfMachines;
 		boolean result = false;
-		for(VirtualMachine vm : machines) {
-			if(!vm.isRunning()) {
-				List<String> vmStarting = new ArrayList<String>();
+		List<String> vmStarting = null;
+		for (VirtualMachine vm : machines) {
+			if (!vm.isRunning()) {
+				vmStarting = new ArrayList<String>();
 				vmStarting.add(vm.getInstance().getInstanceId());
-				result = startInstances(vmStarting);
 				count--;
-			} 
-			if(count <= 0 ) {
+			}
+			if (count <= 0) {
 				break;
 			}
+		}
+		if (vmStarting != null) {
+			result = startInstances(vmStarting);
 		}
 		return result;
 	}
@@ -194,6 +236,9 @@ class VMManager implements Runnable {
 				if (vm.getInstance().getInstanceId() == instance
 						.getInstanceId()) {
 					vm.setInstance(instance);
+					if(vm.isRunning()) {
+						vm.setShutdown(false);
+					}
 					break;
 				}
 			}
