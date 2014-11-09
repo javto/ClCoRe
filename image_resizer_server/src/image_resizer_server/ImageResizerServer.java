@@ -2,8 +2,6 @@ package image_resizer_server;
 
 import java.io.IOException;
 import java.util.Timer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The main class for the server, it starts all the main threads for

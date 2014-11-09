@@ -22,7 +22,7 @@ public class MonitorClientConnection extends TimerTask {
 
     private Socket socket;
     //has to be set on Master server!
-    private final String server = "localhost";
+    private final String server = "ec2-54-148-27-51.us-west-2.compute.amazonaws.com";
     //port has to be same.
     private final int port = 4021;
     private PrintStream so;
