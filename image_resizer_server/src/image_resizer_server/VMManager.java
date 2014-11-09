@@ -355,6 +355,7 @@ class VMManager implements Runnable {
 
 	private boolean startInstances(List<VirtualMachine> vms) {
 		ArrayList<String> instanceIDs = new ArrayList<String>();
+		
 		for (VirtualMachine vm : vms) {
 			if (vm.getSort() != Sort.master ) {
 				Thread ssh_thread = new Thread(new SSHStarter(vm));
