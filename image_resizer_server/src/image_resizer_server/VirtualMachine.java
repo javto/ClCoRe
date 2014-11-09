@@ -127,7 +127,7 @@ public class VirtualMachine {
 		if (instance == null) {
 			throw new ImageResizerException("Instance is not available.");
 		}
-		return instance.getPublicIpAddress();
+		return instance.getPrivateIpAddress();
 	}
 
 	/**

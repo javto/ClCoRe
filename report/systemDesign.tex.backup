@@ -1,5 +1,3 @@
-\section{Background on application}
-The application receives the ZIP file with images to be resized and also custom user parameters, if specified. Images in JPG and PNG format are supported. The application then extracts the images and resizes them to 4 different sizes. These resized images are then put into another ZIP file and sent back to the user. The image processing itself is performed on slave virtual machines, which are chosen by master machines according to their CPU load.
 \section{System Design}
 %Background on Application (recommended size: 0.5 pages): describe the application (1
 %paragraph) and its requirements (1-3 paragraphs, summarized in a table if needed).
@@ -13,4 +11,3 @@ The application receives the ZIP file with images to be resized and also custom 
 %explain how they can be supported in the future.
 %c. (Optional, for bonus points, see Section F) Additional System Features:
 %describe each additional feature of your system, one sub-section per feature.
-
