@@ -1,5 +1,7 @@
 package image_resizer_server;
 
+import image_resizer_server.VirtualMachine.Sort;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,13 +82,27 @@ class VMManager implements Runnable {
 		Timer timer = new Timer();
 		timer.schedule(new PrintNumberOfInstances(), 100, 10000);
 		timer.schedule(new PrintVMPool(), 100, 5000);
-		System.out.println("start instances succeeded: "
-				+ startInstances(amazonConnector.getInstanceIDsStrings()));
 
 		List<Instance> instances = getInstances();
 		for (Instance instance : instances) {
-			machines.add(new VirtualMachine(instance));
+			switch (instance.getInstanceId()) {
+			case "i-db6acdd1":
+				machines.add(new VirtualMachine(instance, Sort.master));
+				break;
+			case "i-db6acdd2":
+				machines.add(new VirtualMachine(instance, Sort.slave_perm));
+				break;
+			default:
+				machines.add(new VirtualMachine(instance, Sort.slave));
+				break;
+			}
 		}
+		// start master and perm slave:
+		List<String> startInstanceIDs = new ArrayList<String>();
+		startInstanceIDs.add("i-db6acdd1"); // master
+		startInstanceIDs.add("i-da6acdd2"); // slave_perm
+		amazonConnector.startInstances(startInstanceIDs);
+
 		long startTime = System.currentTimeMillis();
 		long stopTime = 0;
 		while (running) {
@@ -106,28 +122,27 @@ class VMManager implements Runnable {
 					// TODO: maybe send a signal that no new tasks should be
 					// accepted
 				}
-			}
-			// check if a machine needs to be stopped
-			else if (loadCPU < THRESHHOLDLOW || loadMem < THRESHHOLDLOW) {
+			} else if ((loadCPU < THRESHHOLDLOW || loadMem < THRESHHOLDLOW)) {
 				// stop machine with lowest load, preferably zero, otherwise
 				// don't send any tasks anymore
 				try {
-					shutdownMachine(getMachineWithLowestCPUUtilization()
+					shutdownMachine(getMachineWithLowestCPUUtilization(true)
 							.getInstance().getInstanceId());
-				} catch (ImageResizerException e) {
-					e.printStackTrace();
-					e.getMessage();
+				} catch (ImageResizerException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
 			}
-
 			// kill all machines that have no running tasks and are meant to be
 			// shutdown
 			List<String> toShutdown = new ArrayList<String>();
 			for (VirtualMachine vm : machines) {
-				if (vm.isShutdown() && vm.getNumberOfUser() == 0) {
+				if (vm.isShutdown() && vm.getNumberOfUser() == 0
+						&& vm.isRunning()) {
 					toShutdown.add(vm.getInstance().getInstanceId());
 				}
 			}
+
 			if (!toShutdown.isEmpty()) {
 				killMachines(toShutdown);
 			}
@@ -167,6 +182,11 @@ class VMManager implements Runnable {
 		return result;
 	}
 
+	/**
+	 * shuts down a machine with a certain instance ID
+	 * 
+	 * @param instanceID
+	 */
 	private void shutdownMachine(String instanceID) {
 		for (VirtualMachine vm : machines) {
 			if (vm.getInstance().getInstanceId().equals(instanceID)) {
@@ -251,18 +271,27 @@ class VMManager implements Runnable {
 
 	/**
 	 * Basic method for load balancing, determines to which machine the job
-	 * should be scheduled.
+	 * should be scheduled. only for slaves
 	 *
 	 * @return Virtual machine
 	 * @throws ImageResizerException
 	 */
-	// TODO: maybe this greedy policy isnt the best, we should also know, how
+	// TODO: maybe this greedy policy isn't the best, we should also know, how
 	// many jobs are already being processed there?
-	public VirtualMachine getMachineWithLowestCPUUtilization()
+	public VirtualMachine getMachineWithLowestCPUUtilization(boolean forStopping)
 			throws ImageResizerException {
 		VirtualMachine vm = null;
 		for (VirtualMachine machine : machines) {
-			if (machine.isRunning()) {
+			if (forStopping) {
+				if (machine.isRunning() && machine.getSort() == Sort.slave) {
+					if (vm == null) {
+						vm = machine;
+					}
+					if (machine.getProcessorUsage() < vm.getProcessorUsage()) {
+						vm = machine;
+					}
+				}
+			} else {
 				if (vm == null) {
 					vm = machine;
 				}
