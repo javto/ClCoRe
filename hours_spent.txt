@@ -7,7 +7,7 @@ Adam: 8
 Jaap: 7
 
 the dev-time =
-Adam: 22
+Adam: 24
 Jaap: 14
 
 the xp-time = 

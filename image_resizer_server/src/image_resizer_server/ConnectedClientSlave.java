@@ -11,6 +11,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The class is responsible for handling connected clients to slave machines. It
@@ -61,6 +63,7 @@ public class ConnectedClientSlave implements Runnable {
             //receive the file from the client
             System.out.println("Receiving file.");
             receiveFile();
+            //System.exit(0);
             //receive the parameters from the client
             System.out.println("Receiving parameters.");
             JCommanderParameters jcp = receiveJcp();
@@ -104,7 +107,7 @@ public class ConnectedClientSlave implements Runnable {
         if (si != null) {
             //initialize streams
             FileOutputStream fos = null;
-            byte[] b = new byte[1];
+            byte[] b = new byte[1024 * 1024];
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             try {
                 fos = new FileOutputStream(file);
@@ -116,12 +119,15 @@ public class ConnectedClientSlave implements Runnable {
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             int bytesRead = si.read(b, 0, b.length);
             do {
-                baos.write(b);
+                baos.write(b, 0, bytesRead);
                 bytesRead = si.read(b);
+                bos.write(baos.toByteArray());
+                baos.reset();
             } while (bytesRead != -1);
-            //write to the file
-            bos.write(baos.toByteArray());
-            //close the streams
+//            //write to the file
+//            bos.write(baos.toByteArray(), bytesWritten, baos.size());
+//            //close the streams
+//            bos.flush();
             bos.flush();
             bos.close();
             socket.shutdownInput();
@@ -141,7 +147,7 @@ public class ConnectedClientSlave implements Runnable {
         System.out.println("Sending file back to the client");
         if (so != null) {
             //initialize streams
-            byte[] bytearray = new byte[(int) fileToSend.length()];
+            byte[] bytearray = new byte[1024 * 1024];
             FileInputStream fis = null;
             try {
                 fis = new FileInputStream(fileToSend);
@@ -149,16 +155,19 @@ public class ConnectedClientSlave implements Runnable {
                 System.err.println("Error when reading file.");
             }
             BufferedInputStream bis = new BufferedInputStream(fis);
-
-            //read the file
             try {
-                bis.read(bytearray, 0, bytearray.length);
+                int bytesRead = bis.read(bytearray);
+                int bytesWritten = 0;
+                do {
+                    so.write(bytearray, 0, bytesRead);
+                    bytesWritten += bytesRead;
+                    bytesRead = bis.read(bytearray);
+                } while (bytesRead != -1);
+
             } catch (IOException ex) {
                 System.err.println("Error when sending file.");
             }
-            System.out.println("Sending (" + bytearray.length + " bytes)");
-            //and send it to the client
-            so.write(bytearray, 0, bytearray.length);
+            System.out.println("Sending back.");
             //close the streams
             so.flush();
             System.out.println("Done.");
@@ -169,6 +178,11 @@ public class ConnectedClientSlave implements Runnable {
             }
         }
         so.close();
+        try {
+            Utils.delete(fileToSend);
+        } catch (IOException ex) {
+            System.err.println("Error when deleting file.");
+        }
     }
 
     /**
