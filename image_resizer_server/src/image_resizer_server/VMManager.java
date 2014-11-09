@@ -33,7 +33,7 @@ import com.jcraft.jsch.UserInfo;
 class VMManager implements Runnable {
 
 	private AmazonConnector amazonConnector = null;
-	private ArrayList<VirtualMachine> machines;
+	private ArrayList<VirtualMachine> machines = null;
 	private static VMManager instance;
 	// in miliseconds, how long should the while loop sleep per iteration:
 	private static final int UPDATETIME = 100;
@@ -86,12 +86,15 @@ class VMManager implements Runnable {
 			switch (instance.getInstanceId()) {
 			case "i-db6acdd1":
 				machines.add(new VirtualMachine(instance, Sort.master));
+				System.out.println("add master");
 				break;
 			case "i-d86acdd2":
 				machines.add(new VirtualMachine(instance, Sort.slave_perm));
+				System.out.println("add permanent slave");
 				break;
 			default:
 				machines.add(new VirtualMachine(instance, Sort.slave));
+				System.out.println("add slave");
 				break;
 			}
 		}
@@ -133,12 +136,15 @@ class VMManager implements Runnable {
 			else if (loadCPU < THRESHHOLDLOW || loadMem < THRESHHOLDLOW) {
 				// stop machine with lowest load, preferably zero, otherwise
 				// don't send any tasks anymore
+				VirtualMachine vmStop = null;
 				try {
-					shutdownMachine(getMachineWithLowestCPUUtilization(true)
-							.getInstance().getInstanceId());
+					vmStop = getMachineWithLowestCPUUtilization(true);
 				} catch (ImageResizerException e1) {
 					e1.getMessage();
 					e1.printStackTrace();
+				}
+				if(vmStop != null) {
+					shutdownMachine(vmStop.getInstance().getInstanceId());
 				}
 			}
 			// kill all machines that have no running tasks and are meant to be
