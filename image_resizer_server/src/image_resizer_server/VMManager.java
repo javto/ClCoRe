@@ -296,11 +296,13 @@ class VMManager implements Runnable {
 					}
 				}
 			} else {
-				if (vm == null) {
-					vm = machine;
-				}
-				if (machine.getProcessorUsage() < vm.getProcessorUsage()) {
-					vm = machine;
+				if (machine.isRunning()){
+					if (vm == null) {
+						vm = machine;
+					}
+					if (machine.getProcessorUsage() < vm.getProcessorUsage()) {
+						vm = machine;
+					}
 				}
 			}
 		}
