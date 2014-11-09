@@ -112,23 +112,26 @@ class VMManager implements Runnable {
 				// stop machine with lowest load, preferably zero, otherwise
 				// don't send any tasks anymore
 				try {
-					shutdownMachine(getMachineWithLowestCPUUtilization().getInstance().getInstanceId());
+					shutdownMachine(getMachineWithLowestCPUUtilization()
+							.getInstance().getInstanceId());
 				} catch (ImageResizerException e) {
 					e.printStackTrace();
 					e.getMessage();
 				}
 			}
 
-			//kill all machines that have no running tasks and are meant to be shutdown
-			for(VirtualMachine vm : machines) {
-				//TODO: check for number of tasks also!
-				List<String> toShutdown = new ArrayList<String>();
-				if(vm.isShutdown() && vm.getNumberOfUser() == 0) {
+			// kill all machines that have no running tasks and are meant to be
+			// shutdown
+			List<String> toShutdown = new ArrayList<String>();
+			for (VirtualMachine vm : machines) {
+				if (vm.isShutdown() && vm.getNumberOfUser() == 0) {
 					toShutdown.add(vm.getInstance().getInstanceId());
 				}
+			}
+			if (!toShutdown.isEmpty()) {
 				killMachines(toShutdown);
 			}
-			
+
 			try {
 				Thread.sleep(UPDATETIME);
 			} catch (InterruptedException e) {
@@ -236,7 +239,7 @@ class VMManager implements Runnable {
 				if (vm.getInstance().getInstanceId() == instance
 						.getInstanceId()) {
 					vm.setInstance(instance);
-					if(vm.isRunning()) {
+					if (vm.isRunning()) {
 						vm.setShutdown(false);
 					}
 					break;
