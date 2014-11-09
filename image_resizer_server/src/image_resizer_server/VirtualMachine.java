@@ -15,6 +15,15 @@ public class VirtualMachine {
 	private LogEntry entry = null;
 	private boolean shutdown = false;
 	private Sort sort = null;
+	private boolean applicationRunning = false;
+
+	public boolean isApplicationRunning() {
+		return applicationRunning;
+	}
+
+	public void setApplicationRunning(boolean applicationRunning) {
+		this.applicationRunning = applicationRunning;
+	}
 
 	public boolean isShutdown() {
 		return shutdown;

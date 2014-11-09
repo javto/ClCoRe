@@ -98,13 +98,18 @@ class VMManager implements Runnable {
 		// start master and perm slave:
 		List<VirtualMachine> startVMs = new ArrayList<VirtualMachine>();
 		for (VirtualMachine vm : machines) {
+			if(vm.getSort() != Sort.master && vm.isRunning() && !vm.isApplicationRunning()) {
+				Thread ssh_thread = new Thread(new SSHStarter(vm));
+				ssh_thread.start();
+				vm.setApplicationRunning(true);
+			}
 			if (vm.getInstance().getInstanceId().equals("i-db6acdd1")
 					|| vm.getInstance().getInstanceId().equals("i-d86acdd2")) {
 				startVMs.add(vm);
 			}
 		}
 		startInstances(startVMs);
-
+		
 		long startTime = System.currentTimeMillis();
 		long stopTime = 0;
 		while (running) {
@@ -263,6 +268,8 @@ class VMManager implements Runnable {
 					vm.setInstance(instance);
 					if (vm.isRunning()) {
 						vm.setShutdown(false);
+					} else {
+						vm.setApplicationRunning(false);
 					}
 					break;
 				}
@@ -357,9 +364,10 @@ class VMManager implements Runnable {
 		ArrayList<String> instanceIDs = new ArrayList<String>();
 		
 		for (VirtualMachine vm : vms) {
-			if (vm.getSort() != Sort.master ) {
+			if (vm.getSort() != Sort.master && !vm.isApplicationRunning()) {
 				Thread ssh_thread = new Thread(new SSHStarter(vm));
 				ssh_thread.start();
+				vm.setApplicationRunning(true);
 			}
 			instanceIDs.add(vm.getInstance().getInstanceId());
 		}
