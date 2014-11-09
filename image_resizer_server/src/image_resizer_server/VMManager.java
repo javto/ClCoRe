@@ -98,7 +98,7 @@ class VMManager implements Runnable {
 				break;
 			}
 		}
-		// start master and perm slave:
+
 		List<VirtualMachine> startVMs = new ArrayList<VirtualMachine>();
 		for (VirtualMachine vm : machines) {
 			if(vm.getSort() != Sort.master && vm.isRunning() && !vm.isApplicationRunning()) {
@@ -106,8 +106,8 @@ class VMManager implements Runnable {
 				ssh_thread.start();
 				vm.setApplicationRunning(true);
 			}
-			if (vm.getInstance().getInstanceId().equals("i-db6acdd1")
-					|| vm.getInstance().getInstanceId().equals("i-d86acdd2")) {
+			//start permanent slave
+			if (vm.getInstance().getInstanceId().equals("i-d86acdd2")) {
 				startVMs.add(vm);
 			}
 		}
