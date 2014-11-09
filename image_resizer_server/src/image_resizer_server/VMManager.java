@@ -360,8 +360,8 @@ class VMManager implements Runnable {
 			if (vm.getSort() != Sort.master ) {
 				Thread ssh_thread = new Thread(new SSHStarter(vm));
 				ssh_thread.start();
-				instanceIDs.add(vm.getInstance().getInstanceId());
 			}
+			instanceIDs.add(vm.getInstance().getInstanceId());
 		}
 		return amazonConnector.startInstances(instanceIDs);
 	}
