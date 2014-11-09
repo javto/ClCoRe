@@ -16,7 +16,7 @@ public class ClientMasterConnection {
 
     private Socket socket;
     //has to be set to MASTER address!!
-    private final String server = "localhost";
+    private final String server = "ec2-54-148-27-51.us-west-2.compute.amazonaws.com";
     //port has to be same.
     private final int port = 4019;
     BufferedReader si;
