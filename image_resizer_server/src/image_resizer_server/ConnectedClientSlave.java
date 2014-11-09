@@ -11,8 +11,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The class is responsible for handling connected clients to slave machines. It
@@ -62,6 +60,7 @@ public class ConnectedClientSlave implements Runnable {
         try {
             //receive the file from the client
             System.out.println("Receiving file.");
+            Monitor.getInstance().increaseUsers();
             receiveFile();
             //System.exit(0);
             //receive the parameters from the client
@@ -80,6 +79,7 @@ public class ConnectedClientSlave implements Runnable {
             //send the file back to the client
             sendFile();
             //end the connection
+            Monitor.getInstance().decreaseUsers();
             socket.close();
         } catch (IOException ex) {
             System.err.println("Error when ending connection.");

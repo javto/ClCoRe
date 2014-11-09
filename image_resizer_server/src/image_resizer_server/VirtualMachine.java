@@ -66,7 +66,7 @@ public class VirtualMachine {
      *
      * @return Memory usage
      */
-    public float getMemoryUsage() {
+    public double getMemoryUsage() {
         if (isRunning()) {
             return entry.getMemoryUsage();
         } else {

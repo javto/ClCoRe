@@ -10,10 +10,10 @@ import java.util.Date;
 public class LogEntry implements Serializable {
     private final Date d;
     private final double processor_usage;
-    private final float memory_usage;
+    private final double memory_usage;
     private final int number_of_users;
 
-    public LogEntry(Date d, double processor_usage, float memory_usage, int number_of_users) {
+    public LogEntry(Date d, double processor_usage, double memory_usage, int number_of_users) {
         this.d = d;
         this.processor_usage = processor_usage;
         this.memory_usage = memory_usage;
@@ -28,7 +28,7 @@ public class LogEntry implements Serializable {
         return processor_usage;
     }
 
-    public float getMemoryUsage() {
+    public double getMemoryUsage() {
         return memory_usage;
     }
     

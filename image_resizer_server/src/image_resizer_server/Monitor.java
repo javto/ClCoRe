@@ -9,7 +9,11 @@ import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.hyperic.sigar.ProcCpu;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 
@@ -23,6 +27,7 @@ public class Monitor extends TimerTask {
     private Sigar sigar = new Sigar();
     private ArrayList<LogEntry> log;
     private static Monitor instance = null;
+    private int number_of_users;
 
     public static Monitor getInstance() {
         if (instance == null) {
@@ -36,6 +41,8 @@ public class Monitor extends TimerTask {
      */
     private Monitor() {
         log = new ArrayList<>();
+        number_of_users = 0;
+        SigarLoadMonitor.getInstance();
     }
 
     /**
@@ -48,19 +55,18 @@ public class Monitor extends TimerTask {
             log = new ArrayList<>();
         }
         double processor_usage = 0;
-        float memory_usage = 0;
-        int number_of_users = 0;
+        double memory_usage = 0;
         try {
-            //TODO add also disk usage? number of users! processor value shows 0!
-            processor_usage = sigar.getCpuPerc().getCombined();
-            memory_usage = sigar.getMem().getActualUsed();
+            SigarLoadMonitor slm = SigarLoadMonitor.getInstance();
+            processor_usage = slm.getLoad();
+            memory_usage = sigar.getMem().getUsedPercent();
         } catch (SigarException ex) {
             System.err.println("Error when retrieving performance data.");
         }
         log.add(new LogEntry(new Date(), processor_usage, memory_usage, number_of_users));
         //every 30 seconds, generate new log file.
         //TODO maybe we need something more effective
-        if (log.size() % 30 == 0) {
+        if (log.size() % 5 == 0) {
             this.generateLog();
         }
         if (log.size() % 5 == 0) {
@@ -80,16 +86,16 @@ public class Monitor extends TimerTask {
         } catch (FileNotFoundException ex) {
             System.err.println("Cannot open log file.");
         }
-        pw.println("Date\t\t\t\tProcessor usage\t\t\t\tMemory usage\t\t\t\tNumber of users");
+        pw.println("Date\t\tProcessor usage\t\tMemory usage\t\tNumber of users");
         for (LogEntry entry : log) {
             DateFormat format = DateFormat.getDateTimeInstance();
             String str = format.format(entry.getD());
-            str = str.concat("\t\t\t\t\t\t");
+            str = str.concat("\t\t");
             str = str.concat(String.valueOf((long) entry.getProcessorUsage()));
-            str = str.concat("\t\t\t\t\t\t");
-            str = str.concat(Float.toString(entry.getMemoryUsage()));
-            str = str.concat("\t\t\t\t\t\t");
-            str = str.concat(Float.toString(entry.getNumberOfUsers()));
+            str = str.concat("\t\t");
+            str = str.concat(String.valueOf((long) entry.getMemoryUsage()));
+            str = str.concat("\t\t");
+            str = str.concat(Integer.toString(entry.getNumberOfUsers()));
             pw.println(str);
         }
         pw.close();
@@ -112,4 +118,77 @@ public class Monitor extends TimerTask {
     public LogEntry getLastEntry() {
         return log.get(log.size() - 1);
     }
+
+    public void increaseUsers() {
+        synchronized (this) {
+            number_of_users++;
+        }
+    }
+
+    public void decreaseUsers() {
+        synchronized (this) {
+            number_of_users--;
+        }
+    }
 }
+
+//from http://stackoverflow.com/questions/19323364/using-sigar-api-to-get-jvm-cpu-usage
+    class SigarLoadMonitor {
+
+        private static final int TOTAL_TIME_UPDATE_LIMIT = 2000;
+        private static SigarLoadMonitor instance = null;
+
+        private final Sigar sigar;
+        private final int cpuCount;
+        private final long pid;
+        private ProcCpu prevPc;
+        private double load;
+
+        public static SigarLoadMonitor getInstance() {
+            if (instance == null) {
+                try {
+                    instance = new SigarLoadMonitor();
+                } catch (SigarException ex) {
+                    System.err.println("Error when creating Sigar Monitor.");
+                }
+            }
+            return instance;
+        }
+        
+        private TimerTask updateLoadTask = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    ProcCpu curPc = sigar.getProcCpu(pid);
+                    long totalDelta = curPc.getTotal() - prevPc.getTotal();
+                    long timeDelta = curPc.getLastTime() - prevPc.getLastTime();
+                    if (totalDelta == 0) {
+                        if (timeDelta > TOTAL_TIME_UPDATE_LIMIT) {
+                            load = 0;
+                        }
+                        if (load == 0) {
+                            prevPc = curPc;
+                        }
+                    } else {
+                        load = 100. * totalDelta / timeDelta / cpuCount;
+                        prevPc = curPc;
+                    }
+                } catch (SigarException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        };
+
+        private SigarLoadMonitor() throws SigarException {
+            sigar = new Sigar();
+            cpuCount = sigar.getCpuList().length;
+            pid = sigar.getPid();
+            prevPc = sigar.getProcCpu(pid);
+            load = 0;
+            new Timer(true).schedule(updateLoadTask, 0, 1000);
+        }
+
+        public double getLoad() {
+            return load;
+        }
+    }
