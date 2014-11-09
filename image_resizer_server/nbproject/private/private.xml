@@ -3,15 +3,17 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/wrent/Dropbox/skola/cloud_computing/ClCoRe/image_resizer_server/src/image_resizer_server/MonitorConnection.java</file>
-            <file>file:/home/wrent/Dropbox/skola/cloud_computing/ClCoRe/image_resizer_server/src/image_resizer_server/ConnectedMonitor.java</file>
-            <file>file:/home/wrent/Dropbox/skola/cloud_computing/ClCoRe/image_resizer_server/src/image_resizer_server/LogEntry.java</file>
-            <file>file:/home/wrent/Dropbox/skola/cloud_computing/ClCoRe/image_resizer_server/src/image_resizer_server/Monitor.java</file>
+            <file>file:/home/wrent/Dropbox/skola/cloud_computing/ClCoRe/image_resizer_server/src/image_resizer_server/ZipHandler.java</file>
+            <file>file:/home/wrent/Dropbox/skola/cloud_computing/ClCoRe/image_resizer_server/src/image_resizer_server/Image.java</file>
+            <file>file:/home/wrent/Dropbox/skola/cloud_computing/ClCoRe/image_resizer_server/src/zipdirectory/ZipDirectory.java</file>
+            <file>file:/home/wrent/Dropbox/skola/cloud_computing/ClCoRe/image_resizer_server/src/image_resizer_server/QueueManager.java</file>
+            <file>file:/home/wrent/Dropbox/skola/cloud_computing/ClCoRe/image_resizer_server/src/image_resizer_server/Utils.java</file>
             <file>file:/home/wrent/Dropbox/skola/cloud_computing/ClCoRe/image_resizer_server/src/image_resizer_server/VirtualMachine.java</file>
             <file>file:/home/wrent/Dropbox/skola/cloud_computing/ClCoRe/image_resizer_server/src/image_resizer_server/VMManager.java</file>
-            <file>file:/home/wrent/Dropbox/skola/cloud_computing/ClCoRe/image_resizer_server/src/image_resizer_server/MonitorClientConnection.java</file>
+            <file>file:/home/wrent/Dropbox/skola/cloud_computing/ClCoRe/image_resizer_server/src/image_resizer_server/JobProcessor.java</file>
             <file>file:/home/wrent/Dropbox/skola/cloud_computing/ClCoRe/image_resizer_server/src/image_resizer_server/ImageResizerServer.java</file>
             <file>file:/home/wrent/Dropbox/skola/cloud_computing/ClCoRe/image_resizer_server/src/image_resizer_server/ServerConnection.java</file>
+            <file>file:/home/wrent/Dropbox/skola/cloud_computing/ClCoRe/image_resizer_server/src/image_resizer_server/ImageHandler.java</file>
             <file>file:/home/wrent/Dropbox/skola/cloud_computing/ClCoRe/image_resizer_server/src/image_resizer_server/ConnectedClientSlave.java</file>
         </group>
     </open-files>

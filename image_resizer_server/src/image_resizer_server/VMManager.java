@@ -340,7 +340,7 @@ class VMManager implements Runnable {
 		}
 	}
 
-	class PrintNumberOfInstances extends TimerTask {
+	public class PrintNumberOfInstances extends TimerTask {
 
 		public void run() {
 			List<Instance> instances = getInstances();
