@@ -19,7 +19,7 @@ Adam:
 Jaap:
 
 the write-time = 
-Adam: 1
+Adam: 3
 Jaap:
 
 the wasted-time = 
