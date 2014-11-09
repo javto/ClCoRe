@@ -1,0 +1,57 @@
+\documentclass[12pt,journal, compsoc]{IEEEtran}
+\usepackage{xcolor}
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{algorithm} %Pseudocode
+\usepackage[noend]{algpseudocode} %Pseudocode
+\usepackage{amsthm} %theorem
+
+%\newcommand\todo[1]{\textcolor{red}{#1}}
+% correct bad hyphenation here
+%example: \hyphenation{op-tical net-works semi-conduc-tor}
+
+\newtheorem{alg}{Algorithm}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+
+\begin{document}
+
+\title{IN4392: Cloud Computing, Lab Report}
+
+%\author{Adam Ku\u{c}era (4406028), Jaap van Touw (1380753)\\ \IEEEmembership{Delft University of Technology}}
+%use the following if conference style instead of journal or transmag instead of compsoc
+\author{\IEEEauthorblockN{A. Ku\u{c}era\IEEEauthorrefmark{1},
+J. van Touw\IEEEauthorrefmark{2}, A. Iosup\IEEEauthorrefmark{3},
+D.H.J. Epema\IEEEauthorrefmark{4} and B.I. Ghit\IEEEauthorrefmark{5}}\\
+\IEEEauthorblockA{Parallel and Distributed Systems Group,\\
+Technical University of Delft\\
+Email: \IEEEauthorrefmark{1}A.Kucera@student.tudelft.nl,
+\IEEEauthorrefmark{2}J.vanTouw@tudelft.nl,
+\IEEEauthorrefmark{3}A.Iosup@tudelft.nl,
+\IEEEauthorrefmark{4}D.H.J.Epema@tudelft.nl,
+\IEEEauthorrefmark{5}B.I.Ghit@tudelft.nl}}
+
+% The paper headers
+\markboth{IN4392: Cloud Computing, Lab Report \today}
+{Ku\u{c}era \& van Touw \MakeLowercase{\textit{et al.}}: Large lab exercise}
+
+\IEEEtitleabstractindextext{
+\input{abstract.tex}
+}
+
+\maketitle
+\IEEEdisplaynontitleabstractindextext
+\IEEEpeerreviewmaketitle
+\nocite{*}
+\input{introduction.tex}		
+
+\input{systemDesign.tex}		
+\input{experiments.tex}
+\input{discussion.tex}
+\input{conclusion.tex}
+
+\appendix
+\input{appendices/appendix.tex}
+\end{document}
+
+
