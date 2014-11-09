@@ -91,7 +91,7 @@ class VMManager implements Runnable {
 			case "i-db6acdd1":
 				machines.add(new VirtualMachine(instance, Sort.master));
 				break;
-			case "i-db6acdd2":
+			case "i-d86acdd2":
 				machines.add(new VirtualMachine(instance, Sort.slave_perm));
 				break;
 			default:
@@ -102,7 +102,7 @@ class VMManager implements Runnable {
 		// start master and perm slave:
 		List<String> startInstanceIDs = new ArrayList<String>();
 		startInstanceIDs.add("i-db6acdd1"); // master
-		startInstanceIDs.add("i-da6acdd2"); // slave_perm
+		startInstanceIDs.add("i-d86acdd2"); // slave_perm
 		amazonConnector.startInstances(startInstanceIDs);
 
 		long startTime = System.currentTimeMillis();
