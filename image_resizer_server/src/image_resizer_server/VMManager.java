@@ -80,8 +80,7 @@ class VMManager implements Runnable {
 		// prints the number of running instances every 10 seconds
 		Timer timer = new Timer();
 		timer.schedule(new PrintNumberOfInstances(), 100, 10000);
-		timer.schedule(new PrintVMPool(), 100, 5000);
-
+		
 		List<Instance> instances = getInstances();
 		for (Instance instance : instances) {
 			switch (instance.getInstanceId()) {
@@ -107,7 +106,7 @@ class VMManager implements Runnable {
 				startVMs.add(vm);
 			}
 		}
-		startInstances(startVMs);
+		//startInstances(startVMs);
 
 		long startTime = System.currentTimeMillis();
 		long stopTime = 0;
@@ -122,28 +121,28 @@ class VMManager implements Runnable {
 					.println("CPU load: " + loadCPU + " Mem load: " + loadMem);
 
 			// check if a new machine needs to be started
-			if (loadCPU > THRESHHOLDHIGH || loadMem > THRESHHOLDHIGH) {
-				// add machine ,could actually start more machines at one time
-				boolean started = startMachine(1);
-				if (!started) {
-					// TODO: maybe send a signal that no new tasks should be
-					// accepted
-				}
-			} // check if a machine needs to be stopped
-			else if (loadCPU < THRESHHOLDLOW && loadMem < THRESHHOLDLOW) {
-				// stop machine with lowest load, preferably zero, otherwise
-				// don't send any tasks anymore
-				VirtualMachine vmStop = null;
-				try {
-					vmStop = getMachineWithLowestCPUUtilizationSlave();
-				} catch (ImageResizerException e1) {
-					e1.getMessage();
-					e1.printStackTrace();
-				}
-				if (vmStop != null) {
-					shutdownMachine(vmStop.getInstance().getInstanceId());
-				}
-			}
+//			if (loadCPU > THRESHHOLDHIGH || loadMem > THRESHHOLDHIGH) {
+//				// add machine ,could actually start more machines at one time
+//				boolean started = startMachine(1);
+//				if (!started) {
+//					// TODO: maybe send a signal that no new tasks should be
+//					// accepted
+//				}
+//			} // check if a machine needs to be stopped
+//			else if (loadCPU < THRESHHOLDLOW && loadMem < THRESHHOLDLOW) {
+//				// stop machine with lowest load, preferably zero, otherwise
+//				// don't send any tasks anymore
+//				VirtualMachine vmStop = null;
+//				try {
+//					vmStop = getMachineWithLowestCPUUtilizationSlave();
+//				} catch (ImageResizerException e1) {
+//					e1.getMessage();
+//					e1.printStackTrace();
+//				}
+//				if (vmStop != null) {
+//					shutdownMachine(vmStop.getInstance().getInstanceId());
+//				}
+//			}
 			// kill all machines that have no running tasks and are meant to be
 			// shutdown
 			List<String> toShutdown = new ArrayList<String>();
@@ -244,7 +243,7 @@ class VMManager implements Runnable {
 		double result = 0.0;
 		int counter = 0;
 		for (VirtualMachine vm : machines) {
-			if (vm.isRunning()) {
+			if (vm.isRunning() && vm.getSort() != Sort.master) {
 				counter++;
 				result += vm.getProcessorUsage();
 			}
@@ -257,7 +256,7 @@ class VMManager implements Runnable {
 		float result = 0.0f;
 		int counter = 0;
 		for (VirtualMachine vm : machines) {
-			if (vm.isRunning()) {
+			if (vm.isRunning() && vm.getSort() != Sort.master) {
 				counter++;
 				result += vm.getMemoryUsage();
 			}
@@ -400,26 +399,20 @@ class VMManager implements Runnable {
 		return amazonConnector.getInstancesStates(instances);
 	}
 
-	class PrintVMPool extends TimerTask {
-
-		public void run() {
-			for (VirtualMachine machine : machines) {
-				System.out.println("machine: "
-						+ machine.getInstance().getInstanceId()
-						+ " isRunning: " + machine.isRunning());
-			}
-		}
-	}
-
 	public class PrintNumberOfInstances extends TimerTask {
 
 		public void run() {
 			List<Instance> instances = getInstances();
 			Map<String, String> states = getInstancesStates(instances);
 			for (int i = 0; i < instances.size(); i++) {
-				System.out.println("image ID: "
+				System.out.println("Instance: "
 						+ instances.get(i).getInstanceId() + " state: "
 						+ states.get(instances.get(i).getInstanceId()));
+			}
+			for (VirtualMachine machine : machines) {
+				System.out.println("machine: "
+						+ machine.getInstance().getInstanceId()
+						+ " isRunning: " + machine.isRunning());
 			}
 		}
 	}
@@ -438,9 +431,10 @@ class VMManager implements Runnable {
 	 *            identity key for SSH
 	 * @param command
 	 *            command to be performed
+	 * @throws ImageResizerException
 	 */
 	public void startApplicationViaSSH(String host, String ssh_key,
-			String command) {
+			String command) throws ImageResizerException {
 		JSch jsch = new JSch();
 		String user = "ec2-user";
 		try {
@@ -468,12 +462,13 @@ class VMManager implements Runnable {
 			// connect to SSH
 			System.out.println("Connecting via SSH...");
 			session.connect();
-
+			// wait a bit before executing
 			System.out.println("Connected to the server " + host);
 			// perform the command
 			startSlaveApplication(session, command);
 		} catch (JSchException ex) {
 			System.err.println("Unable to connect to SSH.");
+			throw new ImageResizerException("unable to connect to SSH");
 		}
 	}
 
@@ -547,7 +542,7 @@ class VMManager implements Runnable {
 			try {
 				startApplicationViaSSH(machine.getHost(),
 						"amazonConnection.pem", "./slave &");
-                                machine.setApplicationRunning(AppRun.yes);
+				machine.setApplicationRunning(AppRun.yes);
 			} catch (ImageResizerException ex) {
 				machine.setApplicationRunning(AppRun.no);
 				System.err.println(ex.getMessage());

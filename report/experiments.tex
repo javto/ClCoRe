@@ -52,12 +52,10 @@ To perform the experiments, we have prepared 5 different ZIP files with differen
 without provisioning vs with, show that it isn't much slower than just having the jobs all on
 
 \subsubsection{Load balancing}
+In this experiment we have simulated two scenarios, a flash crowd arrival of a number of clients with a random file out of Table \ref{testset} and a steady state scenario where clients connect every 5 seconds. %TODO insert graph of with and without load balancing for certain number of users
 
-(job max on a slave)
-turn off load balancing vs on
 \subsubsection{Reliability}
-
 kill job, show that user can submit again
 
-\subsubsection{MultiTenancy}
+\subsubsection{Multi-Tenancy}
 run x clients with the same job, show that variance isn't too high

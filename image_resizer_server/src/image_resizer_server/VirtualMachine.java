@@ -81,7 +81,7 @@ public class VirtualMachine {
 	 * @return Processor usage.
 	 */
 	public double getProcessorUsage() {
-		if (isRunning()) {
+		if (isRunning() && entry != null) {
 			return entry.getProcessorUsage();
 		} else {
 			return -1;
@@ -94,7 +94,7 @@ public class VirtualMachine {
 	 * @return Memory usage
 	 */
 	public double getMemoryUsage() {
-		if (isRunning()) {
+		if (isRunning() && entry != null) {
 			return entry.getMemoryUsage();
 		} else {
 			return -1;
@@ -107,7 +107,7 @@ public class VirtualMachine {
 	 * @return Number of users.
 	 */
 	public int getNumberOfUser() {
-		if (isRunning()) {
+		if (isRunning() && entry != null) {
 			return entry.getNumberOfUsers();
 		} else {
 			return -1;
