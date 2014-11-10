@@ -50,7 +50,7 @@ To perform the experiments, we have prepared 5 different ZIP files with differen
 \subsubsection{Load balancing}
 In this experiment we have simulated two scenarios, a flash crowd arrival of a number of clients with a random file out of Table \ref{testset} and a steady state scenario where clients connect every 1 to 5 seconds. 
 
-The flash crowd experiment simulates 5, 10, 15 and 20 clients connecting simultanously. The average runtime of a job for each scenario can be seen on Figure \ref{flash}. As the load ballancer does not have time to start new instances, we can see that the average run time scales almost linearly, as all of the jobs are scheduled to the same amount of slave Virtual machines. Charged time of this experiment would be 1 hour and charged cost 10 cents.
+The flash crowd experiment simulates 5, 10, 15 and 20 clients connecting simultaneously. The average runtime of a job for each scenario can be seen on Figure \ref{flash}. As the load ballancer does not have time to start new instances, we can see that the average run time scales almost linearly, as all of the jobs are scheduled to the same amount of slave Virtual machines. Charged time of this experiment would be 1 hour and charged cost 10 cents.
 
 The steady state scenario connects a new client randomly after 1 to 5 seconds. We again tried to schedule 5, 10, 15 and 20 jobs. The average runtime of job for each scenario can be seen on Figure \ref{steady}. As the VM manager now has time to start new machines, jobs are allocated more equably. But as we use just 4 slave machines at maximum, there is still significant difference between 5 jobs and 10. However, the difference between 15 and 20 jobs is small. Charged time of this experiment would be 1 hour and charged cost 10 cents.
 
