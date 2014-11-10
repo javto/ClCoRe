@@ -66,7 +66,7 @@ The flash crowd experiment simulates 5, 10, 15 and 20 clients connecting simulta
 \end{figure}
 
 \subsubsection{Reliability}
-When a machine fails, the client gets notified about this and has the possibility to resend the job. 
+When a machine fails, the client gets notified about this and has the possibility to resend the job. The system will recognize the failed machine and therefore it will start a new machine, which guarantees, that there will be a machine available to process the job. However, our reliability scenario does not count with the failure of the Master machine.
 
 \subsubsection{Multi-Tenancy}
-As seen in Section \ref{elastic}, multiple users can connect and run their job. By provisioning more machines, more users can be serviced.
+As seen in Section \ref{elastic}, multiple users can connect and run their job. By provisioning more machines, more users can be serviced. However more clients are processed on a machine means longer (but fair) processing time for all of the jobs, as could be seen on Figure \ref{flash}.
