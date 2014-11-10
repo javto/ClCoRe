@@ -5,7 +5,7 @@
 
 %9. Appendix A: Time sheets (see Section E)
 \label{timesheet}
-
+\centering
 \begin{tabular}{| r | c | c |}
 	\hline
  					& Adam 	& Jaap \\ \hline
@@ -17,8 +17,3 @@
 	the write-time 	& 5		& 0	\\ \hline
 	the wasted-time 	& 3		& 0	\\ \hline
 \end{tabular}
-
-\subsection{Experiments Time Sheet}
-
-\subsection{Source code}
-The source code of this open source application can be found on \url{https://github.com/javto/ClCoRe}.

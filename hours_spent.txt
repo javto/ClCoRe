@@ -11,7 +11,7 @@ Adam: 29
 Jaap: 17
 
 the xp-time = 
-Adam:
+Adam: 1
 Jaap:
 
 the analysis-time = 
