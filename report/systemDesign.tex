@@ -93,7 +93,7 @@ This resource management architecture, as mentioned above, suffices all requirem
 \subsubsection{Allocation policies}
 The job is allocated to the machine with lowest CPU utilization at the current moment. However, the system offers methods accessing other usage and performance metrics, which allows easy modification of this policy in the future.
 \subsubsection{Provisioning policies}
-New machines are provisioned when the normalized load is above a certain threshold. This normalized load is calculated by taking the CPU load of every machine and dividing it by the number of machines, it does the same for the memory load. Both loads are measured in percentage, in the range of 0-100. If one of the loads is above 75\%, the system will provision one new machine. Otherwise if both loads are under 35\%, it will send a signal to stop the machine with the lowest load. It will first let it finish its current task if it has one and then actually stop the machine.
+New machines are provisioned when the normalized load is above a certain threshold. This normalized load is calculated by taking the CPU load of every machine and dividing it by the number of machines, it does the same for the memory load. Both loads are measured in percentage, in the range of 0-100. If one of the loads is above 75\%, the system will provision one new machine. Otherwise if both loads are under 35\%, it will send a signal to stop the machine with the lowest load. It will first let it finish its current task if it has one and then actually stop the machine. The threshold value can easily be tweaked in order to optimize performance, however, we leave this to future work.
 \subsection{Implementation}
 The system is implemented in Java and it leverages the following libraries:
 \begin{itemize}
@@ -104,5 +104,6 @@ The system is implemented in Java and it leverages the following libraries:
  \item ZIP Directory\cite{zip} for creating new ZIP from a folder.
 \end{itemize}
 
-
-
+\subsection{Multi Tenancy}
+Through our client-server model we can serve a number of connecting clients on one slave machine. Through our elasticity we start multiple machines, thus we can expand the number of clients that can connect to our application. The bottleneck here, is the master machine which services the client requests, we could upgrade the machine itself to a better Amazon instance type to service more users if the need arises. 
+Each user gets a fair share of the resources to a maximum of one machine per user. 

@@ -114,7 +114,6 @@ class VMManager implements Runnable {
 			// update machine info
 			updateInstances(getInstances());
 
-			
 			double loadCPU = getNormalizedCPULoad();
 			float loadMem = getNormalizedMemoryLoad();
 
@@ -148,12 +147,12 @@ class VMManager implements Runnable {
 			// shutdown
 			List<String> toShutdown = new ArrayList<String>();
 			for (VirtualMachine vm : machines) {
-				//shutdown machines
+				// shutdown machines
 				if (vm.isShutdown() && vm.getNumberOfUser() == 0
 						&& vm.isRunning()) {
 					toShutdown.add(vm.getInstance().getInstanceId());
 				}
-				//start machines if not yet running the application
+				// start machines if not yet running the application
 				if (vm.getSort() != Sort.master && vm.isRunning()
 						&& !vm.isApplicationRunning()) {
 					Thread ssh_thread = new Thread(new SSHStarter(vm));
@@ -274,8 +273,8 @@ class VMManager implements Runnable {
 	private void updateInstances(List<Instance> instances) {
 		for (Instance instance : instances) {
 			for (VirtualMachine vm : machines) {
-				if (vm.getInstance().getInstanceId() == instance
-						.getInstanceId()) {
+				if (vm.getInstance().getInstanceId()
+						.equals(instance.getInstanceId())) {
 					vm.setInstance(instance);
 					if (vm.isRunning()) {
 						vm.setShutdown(false);
@@ -466,7 +465,7 @@ class VMManager implements Runnable {
 			// dont check key footprints
 			session.setConfig("StrictHostKeyChecking", "no");
 			// connect to SSH
-                        System.out.println("Connecting via SSH...");
+			System.out.println("Connecting via SSH...");
 			session.connect();
 
 			System.out.println("Connected to the server " + host);
