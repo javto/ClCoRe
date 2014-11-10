@@ -13,6 +13,5 @@ for ((i = 0; i < $1; i++)); do
 # java -jar ../../image_resizer_client/dist/image_resizer_client.jar -file ../images/image$selectedoption.zip -o $i.zip &
 
    java -jar ../../image_resizer_client/dist/image_resizer_client.jar -file ../images/image10.zip -o $i.zip &
-
 done
 exit 0

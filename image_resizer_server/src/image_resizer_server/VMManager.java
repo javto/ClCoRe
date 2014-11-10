@@ -106,7 +106,7 @@ class VMManager implements Runnable {
 				startVMs.add(vm);
 			}
 		}
-		// startInstances(startVMs);
+		startInstances(startVMs);
 
 		long startTime = System.currentTimeMillis();
 		long stopTime = 0;
