@@ -8,7 +8,7 @@
 %etc.), the general workload and monitoring tools and libraries, other tools and
 %libraries you have used to implement and deploy your system, other tools and
 %libraries used to conduct your experiments.
-All of our experiment were run on Amazon EC2 t2.micro machines, these machines have only 1 CPU and 1GB of memory. We had rented 5 of them and had used them for all our experiments. However, it is very easy to extend our application to support unlimited number of Virtual Machines. We were running the Amazon Linux operating system with a Java installation on all of our instances.
+All of our experiment were run on Amazon EC2 t2.micro machines, these machines have only 1 CPU and 1GB of memory. We had rented 5 of them and had used them for all of our experiments. However, it is very easy to extend our application to support unlimited number of Virtual Machines. We were running the Amazon Linux operating system with a Java installation on all of our instances.
 
 To perform the experiments, we have prepared 5 different ZIP files with different size containing different amount of images. The overview of this test set is in the table \ref{testset}.
 
@@ -55,6 +55,15 @@ In this experiment we simulated a steady interval of clients connecting and send
 
 \subsubsection{Load balancing}
 In this experiment we have simulated two scenarios, a flash crowd arrival of a number of clients with a random file out of Table \ref{testset} and a steady state scenario where clients connect every 5 seconds. %TODO insert graph of with and without load balancing for certain number of users
+
+The flash crowd experiment simulates 5, 10, 15 and 20 clients connecting simultanously. The average run time of a job for each scenario can be seen on Figure \ref{flash}. As the load ballancer does not have time to start new instances, we can see that the average run time scales almost linearly, as all of the jobs are scheduled to the same amount of slave Virtual machines.
+
+\begin{figure}
+ \centering
+ \label{flash}
+ \includegraphics{flash-graph}
+ \caption{Flash crowd arrival}
+\end{figure}
 
 \subsubsection{Reliability}
 When a machine fails, the client gets notified about this and has the possibility to resend the job. 

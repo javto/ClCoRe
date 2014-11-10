@@ -106,4 +106,5 @@ The system is implemented in Java and it leverages the following libraries:
 
 \subsection{Multi Tenancy \emph{Additional System Feature}}
 Through our client-server model we can serve a number of connecting clients on one slave machine. Through our elasticity we start multiple machines, thus we can expand the number of clients that can connect to our application. The bottleneck here, is the master machine which services the client requests, we could upgrade the machine itself to a better Amazon instance type to service more users if the need arises. 
+
 Each user gets a fair share of the resources up to a maximum of one machine per user. If our number of machines gets depleted, new jobs will be put in a queue that will have to wait to be served. 
