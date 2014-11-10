@@ -85,8 +85,7 @@ This resource management architecture, as mentioned above, suffices all requirem
 \subsubsection{Allocation policies}
 The job is allocated to the machine with lowest CPU utilization at the current moment. However, the system offers methods accessing other usage and performance metrics, which allows easy modification of this policy in the future.
 \subsubsection{Provisioning policies}
-
-%TODO Jaap? I didnt write this part :)
+New machines are provisioned when the normalized load is above a certain threshold. This normalized load is calculated by taking the CPU load of every machine and dividing it by the number of machines, it does the same for the memory load. Both loads are measured in percentage, in the range of 0-100. If one of the loads is above 75\%, the system will provision one new machine. Otherwise if both loads are under 35\%, it will send a signal to stop the machine with the lowest load. It will first let it finish its current task if it has one and then actually stop the machine.
 \subsection{Implementation}
 The system is implemented in Java and it leverages the following libraries:
 \begin{itemize}
