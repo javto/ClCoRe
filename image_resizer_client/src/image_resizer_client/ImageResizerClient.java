@@ -2,6 +2,8 @@ package image_resizer_client;
 
 import com.beust.jcommander.JCommander;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Date;
 
 /**
  * Main class for client, it starts the connection.
@@ -16,7 +18,10 @@ public class ImageResizerClient {
         //get the parameters
         JCommanderParameters jcp = new JCommanderParameters();
         new JCommander(jcp, args);
-
+        
+        DateFormat format = DateFormat.getDateTimeInstance();
+        String str = format.format(new Date());
+        System.out.println(str+" Client "+jcp.output.getName()+" started.");
         //get host from the master server
         ClientMasterConnection masterConnection = new ClientMasterConnection();
         String host = "";
@@ -37,7 +42,7 @@ public class ImageResizerClient {
         }
         //and wait for receive
         try {
-            slaveConnection.receiveFile();
+            slaveConnection.receiveFile(jcp.output);
         } catch (IOException ex) {
             System.err.println("Error when receiving file from the slave server"+ex.getMessage());
             System.exit(1);
@@ -48,6 +53,8 @@ public class ImageResizerClient {
         } catch (IOException ex) {
             System.err.println("Error when closing connection.");
         }
+        str = format.format(new Date());
+        System.out.println(str+" Client "+jcp.output.getName()+" ended.");
     }
 
 }

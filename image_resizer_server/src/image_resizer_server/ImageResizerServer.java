@@ -47,7 +47,7 @@ public class ImageResizerServer {
             //schedule sending of Monitor information to master
             MonitorClientConnection mcc = new MonitorClientConnection();
             Timer mcc_timer = new Timer();
-            mcc_timer.schedule(mcc, 0, 5000);
+            mcc_timer.schedule(mcc, 0, 1000);
             //start the main thread processing items in the queue
             JobProcessor jp = new JobProcessor();
             Thread jp_thread = new Thread(jp);

@@ -25,8 +25,6 @@ public class ClientSlaveConnection {
     private final int port = 4020;
     private PrintStream so;
     private BufferedInputStream si;
-    //what is the filename of received file.
-    private final String RECEIVED_FILE = "output";
 
     /**
      * Connects client to the server.
@@ -55,6 +53,7 @@ public class ClientSlaveConnection {
      * @throws IOException
      */
     public void sendFile(File file) throws IOException {
+        System.out.println("Sending file "+file.getName());
         if (so != null) {
             byte[] bytearray = new byte[1024 * 1024];
             FileInputStream fis = null;
@@ -77,7 +76,6 @@ public class ClientSlaveConnection {
             } catch (IOException ex) {
                 System.err.println("Error when sending file.");
             }
-            System.out.println("Sending (" + bytearray.length + " bytes)");
 
             so.flush();
             bis.close();
@@ -110,10 +108,9 @@ public class ClientSlaveConnection {
      *
      * @throws IOException
      */
-    public void receiveFile() throws IOException {
+    public void receiveFile(File file) throws IOException {
         System.out.println("Waiting for files to be processed and receiving file...");
         si = new BufferedInputStream(socket.getInputStream());
-        File file = new File(RECEIVED_FILE + ".zip");
         if (si != null) {
             FileOutputStream fos = null;
             byte[] b = new byte[1024 * 1024];
@@ -134,6 +131,7 @@ public class ClientSlaveConnection {
             } while (bytesRead != -1);
             bos.flush();
             bos.close();
+            System.out.println("File "+file.getName()+" received.");
         }
     }
 }

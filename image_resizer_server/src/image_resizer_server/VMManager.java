@@ -157,7 +157,6 @@ class VMManager implements Runnable {
 						&& !vm.isApplicationRunning()) {
 					Thread ssh_thread = new Thread(new SSHStarter(vm));
 					ssh_thread.start();
-					vm.setApplicationRunning(true);
 				}
 			}
 
@@ -546,6 +545,7 @@ class VMManager implements Runnable {
 			try {
 				startApplicationViaSSH(machine.getHost(),
 						"amazonConnection.pem", "./slave &");
+                                machine.setApplicationRunning(true);
 			} catch (ImageResizerException ex) {
 				System.err.println(ex.getMessage());
 			}

@@ -68,7 +68,7 @@ public class Monitor extends TimerTask {
         log.add(new LogEntry(new Date(), processor_usage, memory_usage, number_of_users));
         //every 30 seconds, generate new log file.
         //TODO maybe we need something more effective
-        if (log.size() % 5 == 0) {
+        if (log.size() % 30 == 0) {
             this.generateLog();
         }
         if (log.size() % 5 == 0) {

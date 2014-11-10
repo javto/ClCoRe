@@ -45,4 +45,6 @@ public class JCommanderParameters {
     @Parameter(names = "-file", description = "Location of original file", converter = FileConverter.class)
     public File file;
 
+    @Parameter(names = "-o", description = "Location of output file", converter = FileConverter.class)
+    public File output;
 }
