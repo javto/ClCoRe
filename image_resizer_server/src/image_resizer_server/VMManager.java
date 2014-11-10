@@ -46,7 +46,7 @@ class VMManager implements Runnable {
 	private static final double THRESHHOLDHIGH = 75;
 
 	// under which utilization should a machine be stopped
-	private static final double THRESHHOLDLOW = 25;
+	private static final double THRESHHOLDLOW = 35;
 
 	/**
 	 * Gets the singleton instance of VMManager.
@@ -133,7 +133,7 @@ class VMManager implements Runnable {
 					// accepted
 				}
 			} // check if a machine needs to be stopped
-			else if (loadCPU < THRESHHOLDLOW || loadMem < THRESHHOLDLOW) {
+			else if (loadCPU < THRESHHOLDLOW && loadMem < THRESHHOLDLOW) {
 				// stop machine with lowest load, preferably zero, otherwise
 				// don't send any tasks anymore
 				VirtualMachine vmStop = null;
