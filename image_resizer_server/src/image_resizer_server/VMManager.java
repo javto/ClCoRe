@@ -101,18 +101,19 @@ class VMManager implements Runnable {
 
 		List<VirtualMachine> startVMs = new ArrayList<VirtualMachine>();
 		for (VirtualMachine vm : machines) {
-			if(vm.getSort() != Sort.master && vm.isRunning() && !vm.isApplicationRunning()) {
+			if (vm.getSort() != Sort.master && vm.isRunning()
+					&& !vm.isApplicationRunning()) {
 				Thread ssh_thread = new Thread(new SSHStarter(vm));
 				ssh_thread.start();
 				vm.setApplicationRunning(true);
 			}
-			//start permanent slave
+			// start permanent slave
 			if (vm.getInstance().getInstanceId().equals("i-d86acdd2")) {
 				startVMs.add(vm);
 			}
 		}
 		startInstances(startVMs);
-		
+
 		long startTime = System.currentTimeMillis();
 		long stopTime = 0;
 		while (running) {
@@ -122,8 +123,9 @@ class VMManager implements Runnable {
 			double loadCPU = getNormalizedCPULoad();
 			float loadMem = getNormalizedMemoryLoad();
 
-			System.out.println("CPU load: " + loadCPU + " Mem load: " + loadMem);
-			
+			System.out
+					.println("CPU load: " + loadCPU + " Mem load: " + loadMem);
+
 			// check if a new machine needs to be started
 			if (loadCPU > THRESHHOLDHIGH || loadMem > THRESHHOLDHIGH) {
 				// add machine ,could actually start more machines at one time
@@ -138,12 +140,12 @@ class VMManager implements Runnable {
 				// don't send any tasks anymore
 				VirtualMachine vmStop = null;
 				try {
-					vmStop = getMachineWithLowestCPUUtilization(true);
+					vmStop = getMachineWithLowestCPUUtilizationSlave();
 				} catch (ImageResizerException e1) {
 					e1.getMessage();
 					e1.printStackTrace();
 				}
-				if(vmStop != null) {
+				if (vmStop != null) {
 					shutdownMachine(vmStop.getInstance().getInstanceId());
 				}
 			}
@@ -286,38 +288,50 @@ class VMManager implements Runnable {
 
 	/**
 	 * Basic method for load balancing, determines to which machine the job
-	 * should be scheduled. only for slaves
+	 * should be scheduled. only for slaves (no perm_slave)
 	 *
 	 * @return Virtual machine
 	 * @throws ImageResizerException
 	 */
 	// TODO: maybe this greedy policy isn't the best, we should also know, how
 	// many jobs are already being processed there?
-	public VirtualMachine getMachineWithLowestCPUUtilization(boolean forStopping)
+	public VirtualMachine getMachineWithLowestCPUUtilizationSlave()
 			throws ImageResizerException {
 		VirtualMachine vm = null;
 		for (VirtualMachine machine : machines) {
-			if (forStopping) {
-				if (machine.isRunning() && machine.getSort() == Sort.slave) {
-					if (vm == null) {
-						vm = machine;
-					}
-					if (machine.getProcessorUsage() < vm.getProcessorUsage()) {
-						vm = machine;
-					}
+			if (machine.isRunning() && machine.getSort() == Sort.slave) {
+				if (vm == null) {
+					vm = machine;
 				}
-			} else {
-				if (machine.isRunning()) {
-					if (vm == null) {
-						vm = machine;
-					}
-					if (machine.getProcessorUsage() < vm.getProcessorUsage()) {
-						vm = machine;
-					}
+				if (machine.getProcessorUsage() < vm.getProcessorUsage()) {
+					vm = machine;
 				}
 			}
 		}
-		if (vm == null && !forStopping) {
+		return vm;
+	}
+
+	/**
+	 * Basic method for load balancing, determines to which machine the job
+	 * should be scheduled. only for slaves (also perm_slaves)
+	 *
+	 * @return Virtual machine
+	 * @throws ImageResizerException
+	 */
+	public VirtualMachine getMachineWithLowestCPUUtilizationNoMaster()
+			throws ImageResizerException {
+		VirtualMachine vm = null;
+		for (VirtualMachine machine : machines) {
+			if (machine.isRunning() && machine.getSort() != Sort.master) {
+				if (vm == null) {
+					vm = machine;
+				}
+				if (machine.getProcessorUsage() < vm.getProcessorUsage()) {
+					vm = machine;
+				}
+			}
+		}
+		if (vm == null) {
 			throw new ImageResizerException("No machine is available.");
 		}
 		return vm;
@@ -368,7 +382,7 @@ class VMManager implements Runnable {
 
 	private boolean startInstances(List<VirtualMachine> vms) {
 		ArrayList<String> instanceIDs = new ArrayList<String>();
-		
+
 		for (VirtualMachine vm : vms) {
 			if (vm.getSort() != Sort.master && !vm.isApplicationRunning()) {
 				Thread ssh_thread = new Thread(new SSHStarter(vm));

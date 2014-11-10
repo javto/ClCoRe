@@ -40,7 +40,7 @@ public class ConnectedClientMaster implements Runnable {
     public void run() {
         try {
             String host;
-            host = VMManager.getInstance().getMachineWithLowestCPUUtilization(false).getHost();
+            host = VMManager.getInstance().getMachineWithLowestCPUUtilizationNoMaster().getHost();
             System.out.println("Sending host info to client: " + host);
             sendHostInfo(host);
         } catch (ImageResizerException ex) {

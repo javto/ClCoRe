@@ -54,6 +54,7 @@ public class VirtualMachine {
 	public VirtualMachine(Instance instance, Sort sort) {
 		this.instance = instance;
 		this.entry = new LogEntry(new Date(), 0, 0, 0);
+		this.sort = sort;
 	}
 
 	/**
