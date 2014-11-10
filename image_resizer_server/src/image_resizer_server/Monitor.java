@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -28,6 +29,7 @@ public class Monitor extends TimerTask {
     private ArrayList<LogEntry> log;
     private static Monitor instance = null;
     private int number_of_users;
+    private int instance_id;
 
     public static Monitor getInstance() {
         if (instance == null) {
@@ -43,6 +45,8 @@ public class Monitor extends TimerTask {
         log = new ArrayList<>();
         number_of_users = 0;
         SigarLoadMonitor.getInstance();
+        Random rand = new Random();
+        instance_id = rand.nextInt();
     }
 
     /**
@@ -79,7 +83,7 @@ public class Monitor extends TimerTask {
      * Generates the log file from the items in log array.
      */
     private void generateLog() {
-        File f = new File("log.txt");
+        File f = new File("log"+instance_id+".txt");
         PrintWriter pw = null;
         try {
             pw = new PrintWriter(f);
