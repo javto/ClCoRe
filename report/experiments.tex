@@ -48,6 +48,7 @@ To perform the experiments, we have prepared 5 different ZIP files with differen
 %system usage and activity.
 
 \subsubsection{Load balancing}
+\label{load}
 In this experiment we have simulated two scenarios, a flash crowd arrival of a number of clients with a random file out of Table \ref{testset} and a steady state scenario where clients connect every 1 to 5 seconds. 
 
 The flash crowd experiment simulates 5, 10, 15 and 20 clients connecting simultaneously. The average runtime of a job for each scenario can be seen on Figure \ref{flash}. As the load ballancer does not have time to start new instances, we can see that the average run time scales almost linearly, as all of the jobs are scheduled to the same amount of slave Virtual machines. Charged time of this experiment would be 1 hour and charged cost 10 cents.
@@ -74,4 +75,4 @@ The steady state scenario connects a new client randomly after 1 to 5 seconds. W
 When a machine fails, the client gets notified about this and has the possibility to resend the job. The system will recognize the failed machine and therefore it will start a new machine, which guarantees, that there will be a machine available to process the job. However, our reliability scenario does not count with the failure of the Master machine.
 
 \subsubsection{Multi-Tenancy}
-As seen in Section \ref{elastic}, multiple users can connect and run their job. By provisioning more machines, more users can be serviced. However more clients being processed on a machine means longer (but fair) processing time for all of the jobs, as could be seen on Figure \ref{flash}.
+As seen in Section \ref{load}, multiple users can connect and run their job. By provisioning more machines, more users can be serviced. However more clients being processed on a machine means longer (but fair) processing time for all of the jobs, as could be seen on Figure \ref{flash}.
