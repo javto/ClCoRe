@@ -7,7 +7,7 @@
 WantCloud BV wants to develop a new image processing client/server application, which would allow users to upload set of images and receive them back resized to 4 different sizes. Such an application might be useful e.g. for web galleries, which require to have images in different sizes to show image previews etc. WantCloud BV wants to try the cloud computing approach for this application to allow the scaling of the application.
 
 \subsection{Related Work} 
-There are several different applications offering the same service as our application, however our approach is special in its usage of Amazon cloud services. We can consider for example PicResize.com\cite{picresize} as a service with similar functionalities, but there are much more others.
+There are several different applications offering the same service as our application. We can consider for example PicResize.com\cite{picresize} as a service with similar functionalities, but there are much more others. However, our approach is unique in its usage of Amazon cloud services. 
 
 \subsection{Proposed solution}
 The application implemented in this report is leveraging Amazon cloud services to provision several users. One Amazon micro instance represents a master server, to which clients can connect to. The master server is responsible for pointing the clients to another Amazon micro instances (called slaves), which process required images. The application can use several slave machines, depending on the number of clients.
