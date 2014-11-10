@@ -55,8 +55,8 @@ In this section we will describe several system features to give a better insigh
 Master Virtual Machine is responsible for managing slave Virtual Machines and pointing incoming clients to these machines. The master server is running three main threads:
 \begin{itemize}
  \item Listener thread, which is responsible for accepting clients and pointing them to the right slave machine.
- \item VM Manager thread, which constantly asks Monitor to watch over the state of Virtual Machines and which decides whether they should be started, stopped or kept running.
- \item Monitor thread, which receives and stores information about performance from the slave machines.
+ \item VM Manager thread, which constantly leverages Virtual Machine information received from the Monitor to watch over the state of Virtual Machines and which decides whether they should be started, stopped or kept running.
+ \item Monitor thread, which receives and stores information about performance from the slave machines and informs the VM Manager about this.
 \end{itemize}
 
 The address of the master server is the only address, which the client requires to know. Addresses of slave machines responsible for image processing itself are dynamically sent to the client.
