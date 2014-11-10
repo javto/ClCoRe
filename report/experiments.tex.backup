@@ -8,7 +8,6 @@
 %etc.), the general workload and monitoring tools and libraries, other tools and
 %libraries you have used to implement and deploy your system, other tools and
 %libraries used to conduct your experiments.
-All of our experiment were run on Amazon EC2 t2.micro machines, these machines have only 1 CPU and 1GB of memory. We had rented 5 of them and had used them for all our experiments. However, it is very easy to extend our application to support unlimited number of Virtual Machines. We were running Amazon Linux with Java installation on all of our instances.
 \subsection{Experiment analysis}
 %b. Experiments: describe the experiments you have conducted to analyze each
 %system feature, then analyze them; use one sub-section per experiment. For
