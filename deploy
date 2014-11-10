@@ -1,5 +1,5 @@
-rsync -Pav -e 'ssh -i amazonConnection.pem -C -c blowfish' image_resizer_server/dist/* ec2-user@ec2-54-148-27-51.us-west-2.compute.amazonaws.com:.
-rsync -Pav -e 'ssh -i amazonConnection.pem -C -c blowfish' image_resizer_server/dist/* ec2-user@ec2-54-148-25-147.us-west-2.compute.amazonaws.com:.
-rsync -Pav -e 'ssh -i amazonConnection.pem -C -c blowfish' image_resizer_server/dist/* ec2-user@ec2-54-69-23-30.us-west-2.compute.amazonaws.com:.
-rsync -Pav -e 'ssh -i amazonConnection.pem -C -c blowfish' image_resizer_server/dist/* ec2-user@ec2-54-148-13-84.us-west-2.compute.amazonaws.com:. 
-rsync -Pav -e 'ssh -i amazonConnection.pem -C -c blowfish' image_resizer_server/dist/* ec2-user@ec2-54-68-121-225.us-west-2.compute.amazonaws.com:.
+rsync -Pav -e 'ssh -i amazonConnection.pem -C -c blowfish' image_resizer_server/dist/* ec2-user@ec2-54-148-17-73.us-west-2.compute.amazonaws.com:.
+rsync -Pav -e 'ssh -i amazonConnection.pem -C -c blowfish' image_resizer_server/dist/* ec2-user@ec2-54-68-140-66.us-west-2.compute.amazonaws.com:.
+rsync -Pav -e 'ssh -i amazonConnection.pem -C -c blowfish' image_resizer_server/dist/* ec2-user@ec2-54-68-106-35.us-west-2.compute.amazonaws.com:.
+rsync -Pav -e 'ssh -i amazonConnection.pem -C -c blowfish' image_resizer_server/dist/* ec2-user@ec2-54-148-17-92.us-west-2.compute.amazonaws.com:. 
+rsync -Pav -e 'ssh -i amazonConnection.pem -C -c blowfish' image_resizer_server/dist/* ec2-user@ec2-54-148-17-92.us-west-2.compute.amazonaws.com:.

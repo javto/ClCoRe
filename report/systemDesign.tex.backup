@@ -2,7 +2,7 @@
 The application receives the ZIP file with images to be resized and also custom user parameters, if specified. Images in JPG and PNG format are supported. The application then extracts the images and resizes them to 4 different sizes. These resized images are then put into another ZIP file and sent back to the user. The image processing itself is performed on slave virtual machines, which are chosen by master machine according to their CPU load.
 
 \subsection{Application requirements}
-WantCloud requires the application to fulfill basic reqirements laid on all cloud computing applications. In particular, it means that application should satisfy these requirements:
+WantCloud requires the application to fulfill basic reqirements layed on all cloud computing applications. In particular, it means that application should satisfy these requirements:
 
 \begin{enumerate}
  \item System should automatically decide whether it should start more Virtual Machines and the incoming jobs should be automatically distributed among these machines.
@@ -70,31 +70,4 @@ Each slave machine is running three main threads:
  \item Job Processor thread, which dequeues the jobs from the queue and processes them.
  \item Monitor thread, which monitors system state and performance every second and regularly sends these information to master server. The thread is also responsible for logs generation.
 \end{itemize}
-
-\subsubsection{Summary}
-This resource management architecture, as mentioned above, suffices all requirements laid on the system:
-\begin{enumerate}
- \item System is fully automated, the client only needs to specify file to be processed. System will automatically decide on which machine the job should be processed and it will start and stop virtual machines to achieve more efficient utilization.
- \item System is able to start and stop Amazon micro machines, according to the given policies.
- \item System is able to schedule client on different slave machines, according to the given policies.
- \item In case of a failure of a machine a new machine can be started and the job can be restarted on this machine.
- \item System keeps track of its usage (number of users) and performance (CPU and Memory utilization) in the logs.
-\end{enumerate}
-
-\subsection{System policies}
-\subsubsection{Allocation policies}
-The job is allocated to the machine with lowest CPU utilization at the current moment. However, the system offers methods accessing other usage and performance metrics, which allows easy modification of this policy in the future.
-\subsubsection{Provisioning policies}
-%TODO Jaap? I didnt write this part :)
-\subsection{Implementation}
-The system is implemented in Java and it leverages the following libraries:
-\begin{itemize}
- \item JCommander for easier parsing of parameters.
- \item Jsch for establishing SSH connection between master and slave machines.
- \item Sigar for getting the access to performance data.
- \item AWS API?%TODO
- \item ZIP Directory for creating new ZIP from a folder.
-\end{itemize}
-
-
 

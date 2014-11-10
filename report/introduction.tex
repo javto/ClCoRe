@@ -3,13 +3,13 @@
 %problem, the existing systems and/or tools (related work), the system you are about to
 %implement, and the structure of the remainder of the article; use one short paragraph
 %for each.
-\paragraph{Current Situation} 
+\subsection{Current Situation} 
 WantCloud BV wants to develop a new image processing client/server application, which would allow users to upload set of images and receive them back resized to 4 different sizes. Such an application might be useful e.g. for web galleries, which requires to have images in different sizes to show image previews etc. WantCloud BV wants to try the cloud computing approach for this application to allow for scaling of the application.
 
-\paragraph{Related Work} 
+\subsection{Related Work} 
 Amazon EC2 t2.micro instances were chosen to host the desired image processing application. The application itself is developed in JAVA and is using several external libraries to support its functions. The JCommander library was used to allow users to specify custom parameters for resized images. The Sigar library was used to collect performance data from the machines. The JSch library was used for SSH communication between Amazon instances. The ZIP Directory library was used for packing resized images into one ZIP file.
 
-\paragraph{Proposed solution}
+\subsection{Proposed solution}
 The application implemented in this paper is leveraging Amazon cloud services to provision several users. One Amazon micro instance represents a master server, to which clients can connect to. The master server is responsible for aiming the clients to another Amazon micro instances (called slaves), which process required images. The application can use several slave machines, depending on the clients load.
 
-\paragraph{Paper overview}
+\subsection{Paper overview}
