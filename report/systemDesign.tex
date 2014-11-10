@@ -2,14 +2,15 @@
 The application receives the ZIP file with images to be resized and also custom user parameters, if specified. Images in JPG and PNG format are supported. The application then extracts the images and resizes them to 4 different sizes. These resized images are then put into another ZIP file and sent back to the user. The image processing itself is performed on slave virtual machines, which are chosen by master machine according to their CPU load.
 
 \subsection{Application requirements}
-WantCloud requires the application to fulfill basic reqirements laid on all cloud computing applications. In particular, it means that application should satisfy these requirements:
+WantCloud requires the application to fulfil basic requirements laid on all cloud computing applications. In particular, it means that application should satisfy these requirements:
 
 \begin{enumerate}
- \item System should automatically decide whether it should start more Virtual Machines and the incoming jobs should be automatically distributed among these machines.
- \item System should offer such functionalities to start and stop rented machines.
- \item System should allocate new jobs to least utilized machines.
- \item System should offer policies for sudden system failures.
- \item System should keep usage statistics and performance metrics.
+The system should...
+ \item automatically decide whether it should start more Virtual Machines and the incoming jobs should be automatically distributed among these machines.
+ \item offer such functionalities to start and stop rented machines.
+ \item allocate new jobs to the least utilized machines.
+ \item offer policies for sudden system failures.
+ \item keep usage statistics and performance metrics.
 \end{enumerate}
 
 \section{System Design}\label{sysdesign}
@@ -28,11 +29,11 @@ WantCloud requires the application to fulfill basic reqirements laid on all clou
 \subsection{Overview}
 The application is designed as a typical client/server application. Client can specify in CLI\footnote{Command line} parameters which file to upload and what sizes of images to request. The client first contacts the master server, which will send the user the address of a slave machine, which will process the job. The client then uploads the file to the slave machine, where it is processed and sent back to the client.
 
-Master instance of the server consists of these main parts:
+The master instance of the server consists of these main parts:
 
 \begin{enumerate}
  \item \emph{Listener}. Listens to clients through TCP socket, when a client connects, it asks VM Manager for the least utilized slave Virtual Machine and returns its address to the client.
- \item \emph{VM Manager}. This component is responsible for starting and stopping slave instances. When a utilization of a machine is bellow certain treshold, this machine is stopped. On the other hand, when a machine is highly utilized and other machine is available, it is started.
+ \item \emph{VM Manager}. This component is responsible for provisioning slave instances. When a utilization of a machine is bellow certain threshold, this machine is stopped. On the other hand, when a machine is highly utilized and other machines  are available, it is started.
  \item \emph{Monitor}. Monitor communicates via TCP socket with slave machines and updates information about their performance, so their utilization can  be easily resolved.
 \end{enumerate}
 
@@ -51,11 +52,11 @@ You can see the design of the application on figure TODO.
 In this section we will describe several system features to give a better insight into the whole resource management architecture.
 
 \subsubsection{Master Virtual Machine}
-Master Virtual Machine is responsible for managing slave Virtual Machines and pointing incoming client to these machines. The master server is running three main threads:
+Master Virtual Machine is responsible for managing slave Virtual Machines and pointing incoming clients to these machines. The master server is running three main threads:
 \begin{itemize}
  \item Listener thread, which is responsible for accepting clients and pointing them to the right slave machine.
- \item VM Manager thread, which constantly leverages Monitor to watch over the state of Virtual Machines and which decides whether they should be started, stopped or kept running.
- \item Monitor thread, which receives information about performance from the slave machines and updates them in VM Manager.
+ \item VM Manager thread, which constantly asks Monitor to watch over the state of Virtual Machines and which decides whether they should be started, stopped or kept running.
+ \item Monitor thread, which receives and stores information about performance from the slave machines.
 \end{itemize}
 
 The address of the master server is the only address, which the client requires to know. Addresses of slave machines responsible for image processing itself are dynamically sent to the client.
@@ -72,11 +73,11 @@ Each slave machine is running three main threads:
 \end{itemize}
 
 \subsubsection{Summary}
-This resource management architecture, as mentioned above, suffices all requirements laid on the system:
+This resource management architecture, as mentioned above, suffices all requirements:
 \begin{enumerate}
- \item System is fully automated, the client only needs to specify file to be processed. System will automatically decide on which machine the job should be processed and it will start and stop virtual machines to achieve more efficient utilization.
- \item System is able to start and stop Amazon micro machines, according to the given policies.
- \item System is able to schedule client on different slave machines, according to the given policies.
+ \item The system is fully automated, the client only needs to specify file to be processed. System will automatically decide on which machine the job should be processed and it will start and stop virtual machines to achieve more efficient utilization.
+ \item The system is able to start and stop Amazon micro machines, according to the given policies.
+ \item The system is able to schedule client on different slave machines, according to the given policies.
  \item In case of a failure of a machine a new machine will be started and the job can be restarted on this machine.
  \item System keeps track of its usage (number of users) and performance (CPU and Memory utilization) in the logs.
 \end{enumerate}
