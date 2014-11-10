@@ -37,7 +37,7 @@ class VMManager implements Runnable {
 	private ArrayList<VirtualMachine> machines = null;
 	private static VMManager instance;
 	// in miliseconds, how long should the while loop sleep per iteration:
-	private static final int UPDATETIME = 1000;
+	private static final int UPDATETIME = 5000;
 
 	// in miliseconds, how long should the while loop run (should be infinite in
 	// rl, but for testing purposes):
@@ -80,7 +80,7 @@ class VMManager implements Runnable {
 		// prints the number of running instances every 10 seconds
 		Timer timer = new Timer();
 		timer.schedule(new PrintNumberOfInstances(), 100, 10000);
-		
+
 		List<Instance> instances = getInstances();
 		for (Instance instance : instances) {
 			switch (instance.getInstanceId()) {
@@ -106,7 +106,7 @@ class VMManager implements Runnable {
 				startVMs.add(vm);
 			}
 		}
-		//startInstances(startVMs);
+		// startInstances(startVMs);
 
 		long startTime = System.currentTimeMillis();
 		long stopTime = 0;
@@ -116,33 +116,32 @@ class VMManager implements Runnable {
 
 			double loadCPU = getNormalizedCPULoad();
 			float loadMem = getNormalizedMemoryLoad();
-
-			System.out
-					.println("CPU load: " + loadCPU + " Mem load: " + loadMem);
-
+			
 			// check if a new machine needs to be started
-//			if (loadCPU > THRESHHOLDHIGH || loadMem > THRESHHOLDHIGH) {
-//				// add machine ,could actually start more machines at one time
-//				boolean started = startMachine(1);
-//				if (!started) {
-//					// TODO: maybe send a signal that no new tasks should be
-//					// accepted
-//				}
-//			} // check if a machine needs to be stopped
-//			else if (loadCPU < THRESHHOLDLOW && loadMem < THRESHHOLDLOW) {
-//				// stop machine with lowest load, preferably zero, otherwise
-//				// don't send any tasks anymore
-//				VirtualMachine vmStop = null;
-//				try {
-//					vmStop = getMachineWithLowestCPUUtilizationSlave();
-//				} catch (ImageResizerException e1) {
-//					e1.getMessage();
-//					e1.printStackTrace();
-//				}
-//				if (vmStop != null) {
-//					shutdownMachine(vmStop.getInstance().getInstanceId());
-//				}
-//			}
+			if (loadCPU > THRESHHOLDHIGH || loadMem > THRESHHOLDHIGH) {
+				int newMachines = 1;
+				
+				// add machine ,could actually start more machines at one time
+				boolean started = startMachine(newMachines);
+				if (!started) {
+					// TODO: maybe send a signal that no new tasks should be
+					// accepted
+				}
+			} // check if a machine needs to be stopped
+			else if (loadCPU < THRESHHOLDLOW && loadMem < THRESHHOLDLOW) {
+				// stop machine with lowest load, preferably zero, otherwise
+				// don't send any tasks anymore
+				VirtualMachine vmStop = null;
+				try {
+					vmStop = getMachineWithLowestCPUUtilizationSlave();
+				} catch (ImageResizerException e1) {
+					e1.getMessage();
+					e1.printStackTrace();
+				}
+				if (vmStop != null) {
+					shutdownMachine(vmStop.getInstance().getInstanceId());
+				}
+			}
 			// kill all machines that have no running tasks and are meant to be
 			// shutdown
 			List<String> toShutdown = new ArrayList<String>();
@@ -228,6 +227,9 @@ class VMManager implements Runnable {
 				vmStarting = new ArrayList<VirtualMachine>();
 				vmStarting.add(vm);
 				count--;
+			} else if (vm.getInstance().getState().getCode() == 0) {
+				//propably already starting one, so no need to start another
+				break;
 			}
 			if (count <= 0) {
 				break;
@@ -374,6 +376,14 @@ class VMManager implements Runnable {
 		return getInstances() != null ? getInstances().size() : -1;
 	}
 
+	private int getNumberOfRunningMachines() {
+		int result = 0;
+		for (VirtualMachine vm : machines) {
+			result += vm.isRunning() ? 1 : 0;
+		}
+		return result;
+	}
+
 	private List<Instance> getInstances() {
 		return amazonConnector.getInstances();
 	}
@@ -412,7 +422,9 @@ class VMManager implements Runnable {
 			for (VirtualMachine machine : machines) {
 				System.out.println("machine: "
 						+ machine.getInstance().getInstanceId()
-						+ " isRunning: " + machine.isRunning());
+						+ " isRunning: " + machine.isRunning() + " CPU: "
+						+ machine.getProcessorUsage() + " MEM: "
+						+ machine.getMemoryUsage());
 			}
 		}
 	}

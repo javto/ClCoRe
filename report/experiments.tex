@@ -48,14 +48,16 @@ To perform the experiments, we have prepared 5 different ZIP files with differen
 %system usage and activity.
 
 \subsubsection{Elasticity}
+\label{elastic}
+In this experiment we simulated a steady interval of clients connecting and sending jobs to our application, one with all slaves already turned on and one with our VM Manager activated and all slaves turned off initially. All the jobs have the image size of TODO and the clients connect at a rate of TODO.
 
-without provisioning vs with, show that it isn't much slower than just having the jobs all on
+%TODO insert graph here
 
 \subsubsection{Load balancing}
 In this experiment we have simulated two scenarios, a flash crowd arrival of a number of clients with a random file out of Table \ref{testset} and a steady state scenario where clients connect every 5 seconds. %TODO insert graph of with and without load balancing for certain number of users
 
 \subsubsection{Reliability}
-kill job, show that user can submit again
+When a machine fails, the client gets notified about this and has the possibility to resend the job. 
 
 \subsubsection{Multi-Tenancy}
-run x clients with the same job, show that variance isn't too high
+As seen in Section \ref{elastic}
