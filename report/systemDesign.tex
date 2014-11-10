@@ -85,6 +85,7 @@ This resource management architecture, as mentioned above, suffices all requirem
 \subsubsection{Allocation policies}
 The job is allocated to the machine with lowest CPU utilization at the current moment. However, the system offers methods accessing other usage and performance metrics, which allows easy modification of this policy in the future.
 \subsubsection{Provisioning policies}
+
 %TODO Jaap? I didnt write this part :)
 \subsection{Implementation}
 The system is implemented in Java and it leverages the following libraries:
@@ -92,7 +93,7 @@ The system is implemented in Java and it leverages the following libraries:
  \item JCommander for easier parsing of parameters.
  \item Jsch for establishing SSH connection between master and slave machines.
  \item Sigar for getting the access to performance data.
- \item AWS API?%TODO
+ \item AWS API, to manage instances from Amazon Elastic Cloud Computing
  \item ZIP Directory for creating new ZIP from a folder.
 \end{itemize}
 

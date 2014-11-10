@@ -101,12 +101,6 @@ class VMManager implements Runnable {
 
 		List<VirtualMachine> startVMs = new ArrayList<VirtualMachine>();
 		for (VirtualMachine vm : machines) {
-			if (vm.getSort() != Sort.master && vm.isRunning()
-					&& !vm.isApplicationRunning()) {
-				Thread ssh_thread = new Thread(new SSHStarter(vm));
-				ssh_thread.start();
-				vm.setApplicationRunning(true);
-			}
 			// start permanent slave
 			if (vm.getInstance().getInstanceId().equals("i-d86acdd2")) {
 				startVMs.add(vm);
@@ -120,6 +114,7 @@ class VMManager implements Runnable {
 			// update machine info
 			updateInstances(getInstances());
 
+			
 			double loadCPU = getNormalizedCPULoad();
 			float loadMem = getNormalizedMemoryLoad();
 
@@ -153,9 +148,17 @@ class VMManager implements Runnable {
 			// shutdown
 			List<String> toShutdown = new ArrayList<String>();
 			for (VirtualMachine vm : machines) {
+				//shutdown machines
 				if (vm.isShutdown() && vm.getNumberOfUser() == 0
 						&& vm.isRunning()) {
 					toShutdown.add(vm.getInstance().getInstanceId());
+				}
+				//start machines if not yet running the application
+				if (vm.getSort() != Sort.master && vm.isRunning()
+						&& !vm.isApplicationRunning()) {
+					Thread ssh_thread = new Thread(new SSHStarter(vm));
+					ssh_thread.start();
+					vm.setApplicationRunning(true);
 				}
 			}
 
