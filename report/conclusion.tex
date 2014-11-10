@@ -4,4 +4,8 @@
 
 \section{Future Work}
 %future work
-There are a number of things that could be done in the future to improve the performance and usability of the application and usage of the cloud. 
+There are a number of things that could be done in the future to improve the performance and usability of the application and usage of the cloud. The application right now implements just very simple greedy load balancing strategy, which decides only base on CPU utilization. This can be improved, as the monitor of the application offers access to other usage and performance metrics.
+
+Provisioning policies are right now based on tresholds of CPU utilization. Also in this case other metrics can be introduced and values of the tresholds could be tweaked to offer better performance.
+
+The system itself should not be considered as a production quality application, as it was developed purely for purposes of this report (evaluation of possible usage of cloud applications for WantCloud services). To keep the application simple and easy to understand, we for example unnecessarily used active waiting in several parts of the application, which could be replaced by more sophisticated concurrency techniques. Also the image processing itself might be more effective.
