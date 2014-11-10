@@ -1,5 +1,6 @@
 package image_resizer_server;
 
+import image_resizer_server.VirtualMachine.AppRun;
 import image_resizer_server.VirtualMachine.Sort;
 
 import java.io.File;
@@ -154,9 +155,10 @@ class VMManager implements Runnable {
 				}
 				// start machines if not yet running the application
 				if (vm.getSort() != Sort.master && vm.isRunning()
-						&& !vm.isApplicationRunning()) {
+						&& vm.getApplicationRunning() == AppRun.no) {
 					Thread ssh_thread = new Thread(new SSHStarter(vm));
 					ssh_thread.start();
+					vm.setApplicationRunning(AppRun.pending);
 				}
 			}
 
@@ -278,7 +280,7 @@ class VMManager implements Runnable {
 					if (vm.isRunning()) {
 						vm.setShutdown(false);
 					} else {
-						vm.setApplicationRunning(false);
+						vm.setApplicationRunning(AppRun.no);
 					}
 					break;
 				}
@@ -545,8 +547,9 @@ class VMManager implements Runnable {
 			try {
 				startApplicationViaSSH(machine.getHost(),
 						"amazonConnection.pem", "./slave &");
-                                machine.setApplicationRunning(true);
+                                machine.setApplicationRunning(AppRun.yes);
 			} catch (ImageResizerException ex) {
+				machine.setApplicationRunning(AppRun.no);
 				System.err.println(ex.getMessage());
 			}
 		}

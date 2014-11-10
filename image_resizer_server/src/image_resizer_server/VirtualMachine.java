@@ -10,18 +10,26 @@ import java.util.Date;
  */
 public class VirtualMachine {
 
-	public enum Sort {master, slave_perm, slave};
+	public enum Sort {
+		master, slave_perm, slave
+	};
+
 	private Instance instance = null;
 	private LogEntry entry = null;
 	private boolean shutdown = false;
 	private Sort sort = null;
-	private boolean applicationRunning = false;
 
-	public boolean isApplicationRunning() {
+	public enum AppRun {
+		yes, pending, no
+	};
+
+	private AppRun applicationRunning = null;
+
+	public AppRun getApplicationRunning() {
 		return applicationRunning;
 	}
 
-	public void setApplicationRunning(boolean applicationRunning) {
+	public void setApplicationRunning(AppRun applicationRunning) {
 		this.applicationRunning = applicationRunning;
 	}
 
@@ -55,7 +63,7 @@ public class VirtualMachine {
 		this.instance = instance;
 		this.entry = new LogEntry(new Date(), 0, 0, 0);
 		this.sort = sort;
-                this.applicationRunning = false;
+		this.applicationRunning = AppRun.no;
 	}
 
 	/**
