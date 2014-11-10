@@ -387,11 +387,6 @@ class VMManager implements Runnable {
 		ArrayList<String> instanceIDs = new ArrayList<String>();
 
 		for (VirtualMachine vm : vms) {
-			if (vm.getSort() != Sort.master && !vm.isApplicationRunning()) {
-				Thread ssh_thread = new Thread(new SSHStarter(vm));
-				ssh_thread.start();
-				vm.setApplicationRunning(true);
-			}
 			instanceIDs.add(vm.getInstance().getInstanceId());
 		}
 		return amazonConnector.startInstances(instanceIDs);
