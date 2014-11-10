@@ -36,7 +36,7 @@ class VMManager implements Runnable {
 	private ArrayList<VirtualMachine> machines = null;
 	private static VMManager instance;
 	// in miliseconds, how long should the while loop sleep per iteration:
-	private static final int UPDATETIME = 100;
+	private static final int UPDATETIME = 1000;
 
 	// in miliseconds, how long should the while loop run (should be infinite in
 	// rl, but for testing purposes):

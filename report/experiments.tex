@@ -8,7 +8,7 @@
 %etc.), the general workload and monitoring tools and libraries, other tools and
 %libraries you have used to implement and deploy your system, other tools and
 %libraries used to conduct your experiments.
-All of our experiment were run on Amazon EC2 t2.micro machines, these machines have only 1 CPU and 1GB of memory. We had rented 5 of them and had used them for all our experiments. However, it is very easy to extend our application to support unlimited number of Virtual Machines. We were running Amazon Linux operating system with a Java installation on all of our instances.
+All of our experiment were run on Amazon EC2 t2.micro machines, these machines have only 1 CPU and 1GB of memory. We had rented 5 of them and had used them for all our experiments. However, it is very easy to extend our application to support unlimited number of Virtual Machines. We were running the Amazon Linux operating system with a Java installation on all of our instances.
 
 To perform the experiments, we have prepared 5 different ZIP files with different size containing different amount of images. The overview of this test set is in the table \ref{testset}.
 
@@ -46,7 +46,6 @@ To perform the experiments, we have prepared 5 different ZIP files with differen
 %the service, etc.
 %iv. (optional) Usage metrics of the experiment, such as per-VM and overall
 %system usage and activity.
-\subsubsection{Automation}
 
 \subsubsection{Elasticity}
 
@@ -59,7 +58,6 @@ turn off load balancing vs on
 \subsubsection{Reliability}
 
 kill job, show that user can submit again
-\subsubsection{Monitoring}
 
 \subsubsection{MultiTenancy}
 run x clients with the same job, show that variance isn't too high
