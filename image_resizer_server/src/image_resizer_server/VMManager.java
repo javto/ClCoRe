@@ -43,10 +43,10 @@ class VMManager implements Runnable {
 	private static final int RUNTIME = 120000;
 
 	// above which utilization should a new machine be started
-	private static final double THRESHHOLDHIGH = 0.7;
+	private static final double THRESHHOLDHIGH = 75;
 
 	// under which utilization should a machine be stopped
-	private static final double THRESHHOLDLOW = 0.3;
+	private static final double THRESHHOLDLOW = 25;
 
 	/**
 	 * Gets the singleton instance of VMManager.
@@ -122,13 +122,13 @@ class VMManager implements Runnable {
 			double loadCPU = getNormalizedCPULoad();
 			float loadMem = getNormalizedMemoryLoad();
 
+			System.out.println("CPU load: " + loadCPU + " Mem load: " + loadMem);
+			
 			// check if a new machine needs to be started
 			if (loadCPU > THRESHHOLDHIGH || loadMem > THRESHHOLDHIGH) {
 				// add machine ,could actually start more machines at one time
 				boolean started = startMachine(1);
 				if (!started) {
-					System.out
-							.println("all machines are in use and we would want more");
 					// TODO: maybe send a signal that no new tasks should be
 					// accepted
 				}
