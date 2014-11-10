@@ -44,7 +44,14 @@ Slave instances of the server are composed of these main parts:
  \item \emph{Monitor}. Monitor collects the information about usage of the machine and its performance. It also generates log reports and sends these information to master Monitor.
 \end{enumerate}
 
-You can see the design of the application on figure TODO.
+You can see the design of the application on \ref{architecture}. Solid lines represent a lifespan of a submitted job, dashed lines then represent asynchronous operations, which are regularly started on the server. 
+
+\begin{figure}
+\includegraphics[scale=0.5]{architecture}
+\label{architecture}
+\caption{Overview of system architecture}
+\end{figure}
+
 
 \subsection{Resource Management Architecture}
 
@@ -89,11 +96,11 @@ New machines are provisioned when the normalized load is above a certain thresho
 \subsection{Implementation}
 The system is implemented in Java and it leverages the following libraries:
 \begin{itemize}
- \item JCommander for easier parsing of parameters.
- \item Jsch for establishing SSH connection between master and slave machines.
- \item Sigar for getting the access to performance data.
- \item AWS API, to manage instances from Amazon Elastic Cloud Computing
- \item ZIP Directory for creating new ZIP from a folder.
+ \item JCommander\cite{jcommander} for easier parsing of parameters.
+ \item Java Secure Channel\cite{jsch} for establishing SSH connection between master and slave machines.
+ \item Sigar\cite{sigar} for getting the access to performance data.
+ \item Amazon AWS SDK for Java\cite{aws}, to manage instances from Amazon Elastic Cloud Computing.
+ \item ZIP Directory\cite{zip} for creating new ZIP from a folder.
 \end{itemize}
 
 
