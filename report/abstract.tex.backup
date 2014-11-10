@@ -1,6 +1,6 @@
 \begin{abstract}
 We have developed a new image processing client/server application, which would allow users to upload set of images and receive them back resized to 4 different sizes. To do this, we made use of the Amazon Elastic Cloud Computing t2.micro instances which are their smallest and free instances. The system provisions new machines when the load is high, stops them when the load is low and puts jobs on the machines with the lowest CPU load.
 
-In this paper we present an overview of the implemented system and how it copes with the requirements which are usually put on such systems. We have also conducted several experiments, which have tested our system load balancing and provisioning policies, we show that solution leveraging more cloud machines offers better performance than single machine. However we cannot state much more about the application as we discovered severe design problem in it during the experimental phase.
+In this paper we present an overview of the implemented system and how it copes with the requirements which are usually put on such systems. We have also conducted several experiments, which have tested our system load balancing and provisioning policies, and we show that solution leveraging cloud computing offers better performance.
 %TODO: add analysis overview and main result
 \end{abstract}
