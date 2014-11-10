@@ -23,8 +23,6 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UIKeyboardInteractive;
 import com.jcraft.jsch.UserInfo;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Singleton VMManager.

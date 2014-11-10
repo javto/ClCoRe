@@ -12,8 +12,6 @@ import java.util.Date;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.hyperic.sigar.ProcCpu;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
@@ -119,23 +117,36 @@ public class Monitor extends TimerTask {
         }
     }
 
+    /**
+     * Returns the last entry from the log.
+     * @return last entry from the log
+     */
     public LogEntry getLastEntry() {
         return log.get(log.size() - 1);
     }
 
+    /**
+     * Increases the number of current users.
+     */
     public void increaseUsers() {
         synchronized (this) {
             number_of_users++;
         }
     }
 
+    /**
+     * Decreases the number of current users.
+     */
     public void decreaseUsers() {
         synchronized (this) {
             number_of_users--;
         }
     }
 }
-
+/**
+ * Class responsible for getting information about CPU.
+ * @author wrent
+ */
 //from http://stackoverflow.com/questions/19323364/using-sigar-api-to-get-jvm-cpu-usage
     class SigarLoadMonitor {
 

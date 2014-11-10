@@ -2,8 +2,6 @@ package image_resizer_client;
 
 import com.beust.jcommander.JCommander;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Main class for client, it starts the connection.

@@ -4,19 +4,27 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- *
+ * Thread representing a processing of one job.
  * @author Adam Kucera
  */
 public class Job implements Runnable {
-
+    //job to be processed
     private QueueItem item;
     private String IMAGES_DIR;
     
+    /**
+     * Initializes new job thread.
+     * @param item job information 
+     * @param dir directory to store images
+     */
     public Job(QueueItem item, String dir) {
         this.item = item;
         this.IMAGES_DIR = dir;
     }
 
+    /**
+     * Main thread method, which will process the images.
+     */
     @Override
     public void run() {
         ConnectedClientSlave client;

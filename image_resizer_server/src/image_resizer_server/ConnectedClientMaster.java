@@ -4,7 +4,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
- *
+ * Class representing a client connected to master server. Responsible for sending address of the host.
  * @author Adam Kucera
  */
 public class ConnectedClientMaster implements Runnable {
@@ -13,11 +13,16 @@ public class ConnectedClientMaster implements Runnable {
     private Socket socket;
     private PrintWriter so;
 
+    /**
+     * Initializes new connection to client.
+     * @param id id of the client
+     * @param clientSocket client socket
+     */
     ConnectedClientMaster(int id, Socket clientSocket) {
         this.id = id;
         this.socket = clientSocket;
 
-        //streams inicialization
+        //stream inicialization
         try {
             so = new PrintWriter(socket.getOutputStream());
         } catch (IOException e) {
@@ -28,10 +33,14 @@ public class ConnectedClientMaster implements Runnable {
                 + ":" + socket.getPort());
     }
 
+    /**
+     * Main loop responsible for sending information to the client.
+     */
     @Override
     public void run() {
         try {
             String host;
+            //get the machine with lowest CPU utilization
             host = VMManager.getInstance().getMachineWithLowestCPUUtilizationNoMaster().getHost();
             System.out.println("Sending host info to client: " + host);
             sendHostInfo(host);
@@ -48,6 +57,10 @@ public class ConnectedClientMaster implements Runnable {
         }
     }
 
+    /**
+     * Sends the host address to the client.
+     * @param host slave address
+     */
     private void sendHostInfo(String host) {
         so.print(host);
     }

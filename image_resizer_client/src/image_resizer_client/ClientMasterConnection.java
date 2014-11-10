@@ -1,15 +1,13 @@
 package image_resizer_client;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
 /**
- *
+ * Class representing the client connection to the master server.
  * @author Adam Kucera
  */
 public class ClientMasterConnection {
@@ -38,6 +36,11 @@ public class ClientMasterConnection {
         }
     }
 
+    /**
+     * Receives the slave host address from the master server.
+     * @return address of the host
+     * @throws IOException 
+     */
     public String getSlaveHost() throws IOException {
         String host = "";
         String str;
