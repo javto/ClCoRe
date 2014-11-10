@@ -23,6 +23,8 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UIKeyboardInteractive;
 import com.jcraft.jsch.UserInfo;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Singleton VMManager.
@@ -443,7 +445,6 @@ class VMManager implements Runnable {
 			String command) {
 		JSch jsch = new JSch();
 		String user = "ec2-user";
-
 		try {
 			// add identity key
 			jsch.addIdentity(ssh_key);
@@ -467,6 +468,7 @@ class VMManager implements Runnable {
 			// dont check key footprints
 			session.setConfig("StrictHostKeyChecking", "no");
 			// connect to SSH
+                        System.out.println("Connecting via SSH...");
 			session.connect();
 
 			System.out.println("Connected to the server " + host);
@@ -543,11 +545,10 @@ class VMManager implements Runnable {
 		@Override
 		public void run() {
 			while (!machine.isRunning()) {
-
 			}
 			try {
 				startApplicationViaSSH(machine.getHost(),
-						"amazonConnection.pem", "./slave");
+						"amazonConnection.pem", "./slave &");
 			} catch (ImageResizerException ex) {
 				System.err.println(ex.getMessage());
 			}
